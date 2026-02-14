@@ -117,6 +117,39 @@ pub enum VmError {
     )]
     BackendNotAvailable { backend: String },
 
+    #[error("VMFile not found at {}", path.display())]
+    #[diagnostic(
+        code(vm_manager::vmfile::not_found),
+        help("create a VMFile.kdl in the current directory or specify a path with --file")
+    )]
+    VmFileNotFound { path: PathBuf },
+
+    #[error("failed to parse VMFile at {location}: {detail}")]
+    #[diagnostic(
+        code(vm_manager::vmfile::parse_failed),
+        help("check VMFile.kdl syntax — see https://kdl.dev for the KDL specification")
+    )]
+    VmFileParseFailed { location: String, detail: String },
+
+    #[error("VMFile validation error in VM '{vm}': {detail}")]
+    #[diagnostic(code(vm_manager::vmfile::validation), help("{hint}"))]
+    VmFileValidation {
+        vm: String,
+        detail: String,
+        hint: String,
+    },
+
+    #[error("provisioning failed for VM '{vm}' at step {step}: {detail}")]
+    #[diagnostic(
+        code(vm_manager::provision::failed),
+        help("check the provisioner configuration and that the VM is reachable via SSH")
+    )]
+    ProvisionFailed {
+        vm: String,
+        step: usize,
+        detail: String,
+    },
+
     #[error(transparent)]
     #[diagnostic(code(vm_manager::io))]
     Io(#[from] std::io::Error),
