@@ -29,6 +29,7 @@ isobemak = { version = "0.2", optional = true }
 
 # SSH
 ssh2 = "0.9"
+ssh-key.workspace = true
 
 [target.'cfg(target_os = "linux")'.dependencies]
 libc = "0.2"

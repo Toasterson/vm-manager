@@ -6,12 +6,10 @@ vm "omnios-builder" {
 
     cloud-init {
         hostname "omnios-builder"
-        ssh-key "~/.ssh/id_ed25519.pub"
     }
 
     ssh {
         user "smithy"
-        private-key "~/.ssh/id_ed25519"
     }
 
     // Stage 1: System packages and Rust toolchain

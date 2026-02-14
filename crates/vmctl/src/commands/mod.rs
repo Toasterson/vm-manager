@@ -88,3 +88,62 @@ fn ssh_port_for_handle(handle: &VmHandle) -> u16 {
         _ => 22,
     }
 }
+
+/// Well-known filename for a generated SSH private key, stored in the VM's work directory.
+const GENERATED_KEY_FILE: &str = "id_ed25519_generated";
+
+/// Persist a generated SSH private key PEM to the VM's work directory (if present).
+async fn save_generated_ssh_key(
+    spec: &vm_manager::VmSpec,
+    handle: &VmHandle,
+) -> miette::Result<()> {
+    if let Some(ref ssh) = spec.ssh {
+        if let Some(ref pem) = ssh.private_key_pem {
+            let key_path = handle.work_dir.join(GENERATED_KEY_FILE);
+            tokio::fs::write(&key_path, pem)
+                .await
+                .map_err(|e| miette::miette!("failed to save generated SSH key: {e}"))?;
+        }
+    }
+    Ok(())
+}
+
+/// Build an `SshConfig` from a VMFile ssh block and (optionally) a persisted generated key.
+///
+/// If the ssh block specifies `private-key`, use that file. Otherwise, look for a previously
+/// generated key in the VM's work directory (written during `vmctl up`).
+fn build_ssh_config(
+    ssh_def: &vm_manager::vmfile::SshDef,
+    base_dir: &std::path::Path,
+    handle: &VmHandle,
+) -> miette::Result<vm_manager::SshConfig> {
+    if let Some(ref key_path) = ssh_def.private_key {
+        return Ok(vm_manager::SshConfig {
+            user: ssh_def.user.clone(),
+            public_key: None,
+            private_key_path: Some(vm_manager::vmfile::resolve_path(key_path, base_dir)),
+            private_key_pem: None,
+        });
+    }
+
+    // Look for a generated key in the VM's work directory
+    let gen_key_path = handle.work_dir.join(GENERATED_KEY_FILE);
+    if gen_key_path.exists() {
+        let pem = std::fs::read_to_string(&gen_key_path).map_err(|e| {
+            miette::miette!(
+                "cannot read generated SSH key at {}: {e}",
+                gen_key_path.display()
+            )
+        })?;
+        Ok(vm_manager::SshConfig {
+            user: ssh_def.user.clone(),
+            public_key: None,
+            private_key_path: None,
+            private_key_pem: Some(pem),
+        })
+    } else {
+        Err(miette::miette!(
+            "no SSH private-key configured and no generated key found for VM — run `vmctl up` first"
+        ))
+    }
+}

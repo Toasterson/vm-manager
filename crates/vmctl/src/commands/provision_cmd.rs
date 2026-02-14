@@ -62,15 +62,7 @@ pub async fn run(args: ProvisionArgs) -> Result<()> {
         let ip = hv.guest_ip(handle).await.into_diagnostic()?;
         let port = super::ssh_port_for_handle(handle);
 
-        let config = vm_manager::SshConfig {
-            user: ssh_def.user.clone(),
-            public_key: None,
-            private_key_path: Some(vm_manager::vmfile::resolve_path(
-                &ssh_def.private_key,
-                &vmfile.base_dir,
-            )),
-            private_key_pem: None,
-        };
+        let config = super::build_ssh_config(ssh_def, &vmfile.base_dir, handle)?;
 
         println!("Provisioning VM '{}'...", def.name);
         let sess =

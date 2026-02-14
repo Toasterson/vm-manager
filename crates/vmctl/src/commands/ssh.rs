@@ -53,12 +53,18 @@ pub async fn run(args: SshArgs) -> Result<()> {
         _ => 22,
     };
 
-    let key_path = args.key.or_else(find_ssh_key).ok_or_else(|| {
-        miette::miette!(
-            "no SSH key found — provide one with --key or ensure ~/.ssh/id_ed25519, \
-             ~/.ssh/id_ecdsa, or ~/.ssh/id_rsa exists"
-        )
-    })?;
+    // Check for a generated key in the VM's work directory first, then user keys
+    let generated_key = handle.work_dir.join(super::GENERATED_KEY_FILE);
+    let key_path = args
+        .key
+        .or_else(|| generated_key.exists().then_some(generated_key))
+        .or_else(find_ssh_key)
+        .ok_or_else(|| {
+            miette::miette!(
+                "no SSH key found — provide one with --key or ensure ~/.ssh/id_ed25519, \
+                 ~/.ssh/id_ecdsa, or ~/.ssh/id_rsa exists"
+            )
+        })?;
 
     let config = SshConfig {
         user: args.user.clone(),

@@ -66,7 +66,9 @@ pub struct CloudInitDef {
 #[derive(Debug, Clone)]
 pub struct SshDef {
     pub user: String,
-    pub private_key: String,
+    /// Path to an existing private key file. When `None`, a per-VM Ed25519
+    /// keypair is generated at resolve time and used via in-memory PEM.
+    pub private_key: Option<String>,
 }
 
 /// A provisioning step.
@@ -320,7 +322,7 @@ fn parse_vm_def(name: &str, doc: &KdlDocument) -> Result<VmDef> {
         let ssh_doc = ssh_node.children().ok_or_else(|| VmError::VmFileValidation {
             vm: name.into(),
             detail: "ssh block must have a body".into(),
-            hint: "add user and private-key inside: ssh { user \"vm\"; private-key \"~/.ssh/id_ed25519\" }".into(),
+            hint: "add at least a user: ssh { user \"vm\" }".into(),
         })?;
         let user = ssh_doc
             .get_arg("user")
@@ -330,12 +332,7 @@ fn parse_vm_def(name: &str, doc: &KdlDocument) -> Result<VmDef> {
         let private_key = ssh_doc
             .get_arg("private-key")
             .and_then(|v| v.as_string())
-            .ok_or_else(|| VmError::VmFileValidation {
-                vm: name.into(),
-                detail: "ssh block requires private-key".into(),
-                hint: "add: private-key \"~/.ssh/id_ed25519\"".into(),
-            })?
-            .to_string();
+            .map(String::from);
         Some(SshDef { user, private_key })
     } else {
         None
@@ -465,60 +462,8 @@ pub async fn resolve(def: &VmDef, base_dir: &Path) -> Result<VmSpec> {
         NetworkDef::None => NetworkConfig::None,
     };
 
-    // Cloud-init
-    let cloud_init = if let Some(ci) = &def.cloud_init {
-        if let Some(raw_path) = &ci.user_data {
-            // Raw user-data file
-            let p = resolve_path(raw_path, base_dir);
-            let data = tokio::fs::read(&p)
-                .await
-                .map_err(|e| VmError::VmFileValidation {
-                    vm: def.name.clone(),
-                    detail: format!("cannot read user-data at {}: {e}", p.display()),
-                    hint: "check the user-data path".into(),
-                })?;
-            Some(CloudInitConfig {
-                user_data: data,
-                instance_id: Some(def.name.clone()),
-                hostname: ci.hostname.clone().or_else(|| Some(def.name.clone())),
-            })
-        } else if let Some(key_raw) = &ci.ssh_key {
-            // Build cloud-config from SSH key
-            let key_path = resolve_path(key_raw, base_dir);
-            let pubkey = tokio::fs::read_to_string(&key_path).await.map_err(|e| {
-                VmError::VmFileValidation {
-                    vm: def.name.clone(),
-                    detail: format!("cannot read ssh-key at {}: {e}", key_path.display()),
-                    hint: "check the ssh-key path".into(),
-                }
-            })?;
-            let hostname = ci.hostname.as_deref().unwrap_or(&def.name);
-            let ssh_user = def.ssh.as_ref().map(|s| s.user.as_str()).unwrap_or("vm");
-            let (user_data, _meta) =
-                build_cloud_config(ssh_user, pubkey.trim(), &def.name, hostname);
-            Some(CloudInitConfig {
-                user_data,
-                instance_id: Some(def.name.clone()),
-                hostname: Some(hostname.to_string()),
-            })
-        } else {
-            // cloud-init block with only hostname, no keys or user-data
-            None
-        }
-    } else {
-        None
-    };
-
-    // SSH config
-    let ssh = def.ssh.as_ref().map(|s| {
-        let key_path = resolve_path(&s.private_key, base_dir);
-        SshConfig {
-            user: s.user.clone(),
-            public_key: None,
-            private_key_path: Some(key_path),
-            private_key_pem: None,
-        }
-    });
+    // Cloud-init + SSH config (resolved together because key generation affects both)
+    let (cloud_init, ssh) = resolve_cloud_init_and_ssh(def, base_dir).await?;
 
     Ok(VmSpec {
         name: def.name.clone(),
@@ -529,6 +474,134 @@ pub async fn resolve(def: &VmDef, base_dir: &Path) -> Result<VmSpec> {
         network,
         cloud_init,
         ssh,
+    })
+}
+
+/// Generate an Ed25519 SSH keypair and return `(public_key_openssh, private_key_pem)`.
+fn generate_ssh_keypair(vm_name: &str) -> Result<(String, String)> {
+    use ssh_key::{Algorithm, LineEnding, PrivateKey, rand_core::OsRng};
+
+    let sk = PrivateKey::random(&mut OsRng, Algorithm::Ed25519).map_err(|e| {
+        VmError::SshKeygenFailed {
+            detail: format!("Ed25519 key generation for VM '{vm_name}': {e}"),
+        }
+    })?;
+
+    let pub_openssh = sk.public_key().to_openssh().map_err(|e| {
+        VmError::SshKeygenFailed {
+            detail: format!("serialize public key: {e}"),
+        }
+    })?;
+
+    let priv_pem = sk.to_openssh(LineEnding::LF).map_err(|e| {
+        VmError::SshKeygenFailed {
+            detail: format!("serialize private key: {e}"),
+        }
+    })?;
+
+    Ok((pub_openssh, priv_pem.to_string()))
+}
+
+/// Resolve cloud-init and SSH config together.
+///
+/// When the VMFile provides a `cloud-init` block but no `ssh-key` (and no `user-data`), and the
+/// `ssh` block omits `private-key`, we generate a per-VM Ed25519 keypair: the public key is
+/// injected into cloud-config and the private key PEM is used for SSH auth.
+async fn resolve_cloud_init_and_ssh(
+    def: &VmDef,
+    base_dir: &Path,
+) -> Result<(Option<CloudInitConfig>, Option<SshConfig>)> {
+    let ssh_user = def.ssh.as_ref().map(|s| s.user.as_str()).unwrap_or("vm");
+    let hostname = def
+        .cloud_init
+        .as_ref()
+        .and_then(|ci| ci.hostname.as_deref())
+        .unwrap_or(&def.name);
+
+    // --- Cloud-init: raw user-data file ---
+    if let Some(ci) = &def.cloud_init {
+        if let Some(raw_path) = &ci.user_data {
+            let p = resolve_path(raw_path, base_dir);
+            let data =
+                tokio::fs::read(&p)
+                    .await
+                    .map_err(|e| VmError::VmFileValidation {
+                        vm: def.name.clone(),
+                        detail: format!("cannot read user-data at {}: {e}", p.display()),
+                        hint: "check the user-data path".into(),
+                    })?;
+            let cloud_init = Some(CloudInitConfig {
+                user_data: data,
+                instance_id: Some(def.name.clone()),
+                hostname: ci.hostname.clone().or_else(|| Some(def.name.clone())),
+            });
+            // SSH config from explicit key (if any)
+            let ssh = resolve_ssh_config_from_def(def, base_dir);
+            return Ok((cloud_init, ssh));
+        }
+    }
+
+    // --- Cloud-init: explicit ssh-key file ---
+    if let Some(ci) = &def.cloud_init {
+        if let Some(key_raw) = &ci.ssh_key {
+            let key_path = resolve_path(key_raw, base_dir);
+            let pubkey =
+                tokio::fs::read_to_string(&key_path)
+                    .await
+                    .map_err(|e| VmError::VmFileValidation {
+                        vm: def.name.clone(),
+                        detail: format!("cannot read ssh-key at {}: {e}", key_path.display()),
+                        hint: "check the ssh-key path".into(),
+                    })?;
+            let (user_data, _meta) =
+                build_cloud_config(ssh_user, pubkey.trim(), &def.name, hostname);
+            let cloud_init = Some(CloudInitConfig {
+                user_data,
+                instance_id: Some(def.name.clone()),
+                hostname: Some(hostname.to_string()),
+            });
+            let ssh = resolve_ssh_config_from_def(def, base_dir);
+            return Ok((cloud_init, ssh));
+        }
+    }
+
+    // --- Cloud-init block present but no ssh-key / no user-data → generate keypair ---
+    if def.cloud_init.is_some() {
+        info!(vm = %def.name, "generating Ed25519 SSH keypair for cloud-init");
+        let (pub_openssh, priv_pem) = generate_ssh_keypair(&def.name)?;
+
+        let (user_data, _meta) =
+            build_cloud_config(ssh_user, &pub_openssh, &def.name, hostname);
+        let cloud_init = Some(CloudInitConfig {
+            user_data,
+            instance_id: Some(def.name.clone()),
+            hostname: Some(hostname.to_string()),
+        });
+        let ssh = Some(SshConfig {
+            user: ssh_user.to_string(),
+            public_key: Some(pub_openssh),
+            private_key_path: None,
+            private_key_pem: Some(priv_pem),
+        });
+        return Ok((cloud_init, ssh));
+    }
+
+    // --- No cloud-init at all ---
+    let ssh = resolve_ssh_config_from_def(def, base_dir);
+    Ok((None, ssh))
+}
+
+/// Build an `SshConfig` from an explicit `private-key` path in the SSH block.
+/// Returns `None` if there is no ssh block or no private-key specified.
+fn resolve_ssh_config_from_def(def: &VmDef, base_dir: &Path) -> Option<SshConfig> {
+    def.ssh.as_ref().and_then(|s| {
+        let key_path = s.private_key.as_ref()?;
+        Some(SshConfig {
+            user: s.user.clone(),
+            public_key: None,
+            private_key_path: Some(resolve_path(key_path, base_dir)),
+            private_key_pem: None,
+        })
     })
 }
 
@@ -611,7 +684,7 @@ vm "web" {
 
         let ssh = vm.ssh.as_ref().unwrap();
         assert_eq!(ssh.user, "admin");
-        assert_eq!(ssh.private_key, "~/.ssh/id_ed25519");
+        assert_eq!(ssh.private_key.as_deref(), Some("~/.ssh/id_ed25519"));
 
         assert_eq!(vm.provisions.len(), 2);
         assert!(

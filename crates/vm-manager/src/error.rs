@@ -78,6 +78,13 @@ pub enum VmError {
     )]
     SshFailed { detail: String },
 
+    #[error("failed to generate SSH keypair: {detail}")]
+    #[diagnostic(
+        code(vm_manager::ssh::keygen_failed),
+        help("this is an internal error in Ed25519 key generation — please report it")
+    )]
+    SshKeygenFailed { detail: String },
+
     #[error("failed to download image from {url}: {detail}")]
     #[diagnostic(
         code(vm_manager::image::download_failed),

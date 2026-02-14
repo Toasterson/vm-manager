@@ -52,6 +52,7 @@ pub async fn run(args: ReloadArgs) -> Result<()> {
             .into_diagnostic()?;
 
         let handle = hv.prepare(&spec).await.into_diagnostic()?;
+        super::save_generated_ssh_key(&spec, &handle).await?;
         store.insert(def.name.clone(), handle.clone());
         state::save_store(&store).await?;
 
@@ -98,15 +99,7 @@ async fn run_provision_for_vm(
     let ip = hv.guest_ip(handle).await.into_diagnostic()?;
     let port = super::ssh_port_for_handle(handle);
 
-    let config = vm_manager::SshConfig {
-        user: ssh_def.user.clone(),
-        public_key: None,
-        private_key_path: Some(vm_manager::vmfile::resolve_path(
-            &ssh_def.private_key,
-            base_dir,
-        )),
-        private_key_pem: None,
-    };
+    let config = super::build_ssh_config(ssh_def, base_dir, handle)?;
 
     println!("Provisioning VM '{vm_name}'...");
     let sess = vm_manager::ssh::connect_with_retry(&ip, port, &config, Duration::from_secs(120))
