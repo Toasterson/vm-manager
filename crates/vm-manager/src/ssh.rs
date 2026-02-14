@@ -9,11 +9,11 @@ use tracing::warn;
 use crate::error::{Result, VmError};
 use crate::types::SshConfig;
 
-/// Establish an SSH session to the given IP using the provided config.
+/// Establish an SSH session to the given IP and port using the provided config.
 ///
 /// Tries in-memory key first, then key file path.
-pub fn connect(ip: &str, config: &SshConfig) -> Result<Session> {
-    let addr = format!("{ip}:22");
+pub fn connect(ip: &str, port: u16, config: &SshConfig) -> Result<Session> {
+    let addr = format!("{ip}:{port}");
     let tcp = TcpStream::connect(&addr).map_err(|e| VmError::SshFailed {
         detail: format!("TCP connect to {addr}: {e}"),
     })?;
@@ -124,6 +124,7 @@ pub fn upload(sess: &Session, local: &Path, remote: &Path) -> Result<()> {
 /// Retries the connection until `timeout` elapses, with exponential backoff capped at 5 seconds.
 pub async fn connect_with_retry(
     ip: &str,
+    port: u16,
     config: &SshConfig,
     timeout: Duration,
 ) -> Result<Session> {
@@ -137,7 +138,8 @@ pub async fn connect_with_retry(
         let config_clone = config.clone();
 
         // Run the blocking SSH connect on a blocking thread
-        let result = tokio::task::spawn_blocking(move || connect(&ip_owned, &config_clone)).await;
+        let result =
+            tokio::task::spawn_blocking(move || connect(&ip_owned, port, &config_clone)).await;
 
         match result {
             Ok(Ok(sess)) => return Ok(sess),

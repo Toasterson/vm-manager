@@ -1,4 +1,4 @@
-//! Persistent state for vmctl: maps VM name → VmHandle in a JSON file.
+//! Persistent state for vmctl: maps VM name -> VmHandle in a JSON file.
 
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -27,13 +27,17 @@ pub async fn load_store() -> Result<Store> {
     Ok(store)
 }
 
-/// Save the VM store to disk.
+/// Save the VM store to disk atomically (write to .tmp then rename).
 pub async fn save_store(store: &Store) -> Result<()> {
     let path = state_path();
     if let Some(parent) = path.parent() {
         tokio::fs::create_dir_all(parent).await.into_diagnostic()?;
     }
     let data = serde_json::to_string_pretty(store).into_diagnostic()?;
-    tokio::fs::write(&path, data).await.into_diagnostic()?;
+    let tmp_path = path.with_extension("json.tmp");
+    tokio::fs::write(&tmp_path, data).await.into_diagnostic()?;
+    tokio::fs::rename(&tmp_path, &path)
+        .await
+        .into_diagnostic()?;
     Ok(())
 }

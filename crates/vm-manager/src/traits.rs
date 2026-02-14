@@ -10,17 +10,22 @@ pub trait Hypervisor: Send + Sync {
     /// Allocate resources (overlay disk, cloud-init ISO, zone config, etc.) and return a handle.
     fn prepare(&self, spec: &VmSpec) -> impl Future<Output = Result<VmHandle>> + Send;
 
-    /// Boot the VM.
-    fn start(&self, vm: &VmHandle) -> impl Future<Output = Result<()>> + Send;
+    /// Boot the VM. Returns the updated handle with PID, VNC addr, etc.
+    fn start(&self, vm: &VmHandle) -> impl Future<Output = Result<VmHandle>> + Send;
 
     /// Gracefully stop the VM. Falls back to forceful termination after `timeout`.
-    fn stop(&self, vm: &VmHandle, timeout: Duration) -> impl Future<Output = Result<()>> + Send;
+    /// Returns the updated handle with cleared runtime fields.
+    fn stop(
+        &self,
+        vm: &VmHandle,
+        timeout: Duration,
+    ) -> impl Future<Output = Result<VmHandle>> + Send;
 
-    /// Pause VM execution (freeze vCPUs).
-    fn suspend(&self, vm: &VmHandle) -> impl Future<Output = Result<()>> + Send;
+    /// Pause VM execution (freeze vCPUs). Returns the updated handle.
+    fn suspend(&self, vm: &VmHandle) -> impl Future<Output = Result<VmHandle>> + Send;
 
-    /// Resume a suspended VM.
-    fn resume(&self, vm: &VmHandle) -> impl Future<Output = Result<()>> + Send;
+    /// Resume a suspended VM. Returns the updated handle.
+    fn resume(&self, vm: &VmHandle) -> impl Future<Output = Result<VmHandle>> + Send;
 
     /// Stop the VM (if running) and clean up all resources.
     fn destroy(&self, vm: VmHandle) -> impl Future<Output = Result<()>> + Send;

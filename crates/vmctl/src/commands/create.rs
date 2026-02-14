@@ -51,14 +51,58 @@ pub struct CreateArgs {
 }
 
 pub async fn run(args: CreateArgs) -> Result<()> {
+    // --- Input validation ---
+    if args.vcpus == 0 {
+        miette::bail!(
+            severity = miette::Severity::Error,
+            code = "vmctl::create::invalid_vcpus",
+            help = "specify at least 1 vCPU with --vcpus",
+            "vCPUs must be greater than 0"
+        );
+    }
+    if args.memory == 0 {
+        miette::bail!(
+            severity = miette::Severity::Error,
+            code = "vmctl::create::invalid_memory",
+            help = "specify a positive amount of memory in MB with --memory",
+            "memory must be greater than 0"
+        );
+    }
+
+    // Check for name collision
+    let mut store = state::load_store().await?;
+    if store.contains_key(&args.name) {
+        miette::bail!(
+            severity = miette::Severity::Error,
+            code = "vmctl::create::name_exists",
+            help = "choose a different name or destroy the existing VM with `vmctl destroy {name}`",
+            "VM '{name}' already exists",
+            name = args.name
+        );
+    }
+
     // Resolve image
     let image_path = if let Some(ref path) = args.image {
+        if !path.exists() {
+            miette::bail!(
+                severity = miette::Severity::Error,
+                code = "vmctl::create::image_not_found",
+                help = "check the path is correct and the file exists",
+                "image file not found: {}",
+                path.display()
+            );
+        }
         path.clone()
     } else if let Some(ref url) = args.image_url {
         let mgr = vm_manager::image::ImageManager::new();
         mgr.pull(url, Some(&args.name)).await.into_diagnostic()?
     } else {
-        miette::bail!("either --image or --image-url must be specified");
+        miette::bail!(
+            severity = miette::Severity::Error,
+            code = "vmctl::create::no_image",
+            help = "provide --image for a local file or --image-url to download one",
+            "either --image or --image-url must be specified"
+        );
     };
 
     // Build cloud-init config if user-data or ssh key provided
@@ -121,14 +165,15 @@ pub async fn run(args: CreateArgs) -> Result<()> {
     info!(name = %args.name, id = %handle.id, "VM created");
 
     // Persist handle
-    let mut store = state::load_store().await?;
     store.insert(args.name.clone(), handle.clone());
     state::save_store(&store).await?;
 
     println!("VM '{}' created (id: {})", args.name, handle.id);
 
     if args.start {
-        hv.start(&handle).await.into_diagnostic()?;
+        let updated = hv.start(&handle).await.into_diagnostic()?;
+        store.insert(args.name.clone(), updated);
+        state::save_store(&store).await?;
         println!("VM '{}' started", args.name);
     }
 

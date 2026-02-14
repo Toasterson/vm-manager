@@ -133,13 +133,19 @@ impl Hypervisor for PropolisBackend {
             qmp_socket: None,
             console_socket: None,
             vnc_addr: None,
+            vcpus: spec.vcpus,
+            memory_mb: spec.memory_mb,
+            disk_gb: spec.disk_gb,
+            network: spec.network.clone(),
+            ssh_host_port: None,
+            mac_addr: None,
         };
 
         info!(name = %spec.name, id = %handle.id, "Propolis: prepared");
         Ok(handle)
     }
 
-    async fn start(&self, vm: &VmHandle) -> Result<()> {
+    async fn start(&self, vm: &VmHandle) -> Result<VmHandle> {
         // Boot zone
         let (ok, _, stderr) = Self::run_cmd("zoneadm", &["-z", &vm.name, "boot"]).await?;
         if !ok {
@@ -190,10 +196,10 @@ impl Hypervisor for PropolisBackend {
             })?;
 
         info!(name = %vm.name, "Propolis: started");
-        Ok(())
+        Ok(vm.clone())
     }
 
-    async fn stop(&self, vm: &VmHandle, _timeout: Duration) -> Result<()> {
+    async fn stop(&self, vm: &VmHandle, _timeout: Duration) -> Result<VmHandle> {
         let propolis_addr = "127.0.0.1:12400";
         let client = reqwest::Client::new();
 
@@ -208,17 +214,17 @@ impl Hypervisor for PropolisBackend {
         let _ = Self::run_cmd("zoneadm", &["-z", &vm.name, "halt"]).await;
 
         info!(name = %vm.name, "Propolis: stopped");
-        Ok(())
+        Ok(vm.clone())
     }
 
-    async fn suspend(&self, vm: &VmHandle) -> Result<()> {
+    async fn suspend(&self, vm: &VmHandle) -> Result<VmHandle> {
         info!(name = %vm.name, "Propolis: suspend (not yet implemented)");
-        Ok(())
+        Ok(vm.clone())
     }
 
-    async fn resume(&self, vm: &VmHandle) -> Result<()> {
+    async fn resume(&self, vm: &VmHandle) -> Result<VmHandle> {
         info!(name = %vm.name, "Propolis: resume (not yet implemented)");
-        Ok(())
+        Ok(vm.clone())
     }
 
     async fn destroy(&self, vm: VmHandle) -> Result<()> {

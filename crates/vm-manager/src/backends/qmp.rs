@@ -75,11 +75,13 @@ impl QmpClient {
     async fn send_command(&mut self, execute: &str, arguments: Option<Value>) -> Result<()> {
         let mut cmd = serde_json::json!({ "execute": execute });
         if let Some(args) = arguments {
-            cmd.as_object_mut()
-                .unwrap()
-                .insert("arguments".into(), args);
+            if let Some(obj) = cmd.as_object_mut() {
+                obj.insert("arguments".into(), args);
+            }
         }
-        let mut line = serde_json::to_string(&cmd).unwrap();
+        let mut line = serde_json::to_string(&cmd).map_err(|e| VmError::QmpCommandFailed {
+            message: format!("JSON serialize failed: {e}"),
+        })?;
         line.push('\n');
         trace!(cmd = %line.trim(), "QMP send");
         self.writer
@@ -196,5 +198,30 @@ impl QmpClient {
             .unwrap_or("unknown")
             .to_string();
         Ok(status)
+    }
+
+    /// Query the VNC server address. Returns `"host:port"` if VNC is active.
+    pub async fn query_vnc(&mut self) -> Result<Option<String>> {
+        let resp = self.execute("query-vnc", None).await?;
+        if resp.get("error").is_some() {
+            return Ok(None);
+        }
+        let ret = match resp.get("return") {
+            Some(r) => r,
+            None => return Ok(None),
+        };
+        let enabled = ret
+            .get("enabled")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+        if !enabled {
+            return Ok(None);
+        }
+        let host = ret
+            .get("host")
+            .and_then(|v| v.as_str())
+            .unwrap_or("127.0.0.1");
+        let service = ret.get("service").and_then(|v| v.as_str()).unwrap_or("0");
+        Ok(Some(format!("{host}:{service}")))
     }
 }

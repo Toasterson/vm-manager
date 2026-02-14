@@ -17,15 +17,20 @@ pub struct StopArgs {
 }
 
 pub async fn run(args: StopArgs) -> Result<()> {
-    let store = state::load_store().await?;
+    let mut store = state::load_store().await?;
     let handle = store
         .get(&args.name)
         .ok_or_else(|| miette::miette!("VM '{}' not found", args.name))?;
 
     let hv = RouterHypervisor::new(None, None);
-    hv.stop(handle, Duration::from_secs(args.timeout))
+    let updated = hv
+        .stop(handle, Duration::from_secs(args.timeout))
         .await
         .into_diagnostic()?;
+
+    store.insert(args.name.clone(), updated);
+    state::save_store(&store).await?;
+
     println!("VM '{}' stopped", args.name);
     Ok(())
 }

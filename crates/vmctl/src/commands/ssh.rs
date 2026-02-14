@@ -3,9 +3,12 @@ use std::time::Duration;
 
 use clap::Args;
 use miette::{IntoDiagnostic, Result};
-use vm_manager::{Hypervisor, RouterHypervisor, SshConfig};
+use vm_manager::{Hypervisor, NetworkConfig, RouterHypervisor, SshConfig};
 
 use super::state;
+
+/// SSH key filenames to try, in order of preference.
+const SSH_KEY_NAMES: &[&str] = &["id_ed25519", "id_ecdsa", "id_rsa"];
 
 #[derive(Args)]
 pub struct SshArgs {
@@ -21,6 +24,20 @@ pub struct SshArgs {
     key: Option<PathBuf>,
 }
 
+/// Find the first existing SSH key in the user's .ssh directory.
+fn find_ssh_key() -> Option<PathBuf> {
+    let ssh_dir = dirs::home_dir()
+        .unwrap_or_else(|| PathBuf::from("/root"))
+        .join(".ssh");
+    for name in SSH_KEY_NAMES {
+        let path = ssh_dir.join(name);
+        if path.exists() {
+            return Some(path);
+        }
+    }
+    None
+}
+
 pub async fn run(args: SshArgs) -> Result<()> {
     let store = state::load_store().await?;
     let handle = store
@@ -30,12 +47,18 @@ pub async fn run(args: SshArgs) -> Result<()> {
     let hv = RouterHypervisor::new(None, None);
     let ip = hv.guest_ip(handle).await.into_diagnostic()?;
 
-    let key_path = args.key.unwrap_or_else(|| {
-        dirs::home_dir()
-            .unwrap_or_else(|| PathBuf::from("/root"))
-            .join(".ssh")
-            .join("id_ed25519")
-    });
+    // Determine SSH port: use the forwarded host port for user-mode networking
+    let port = match handle.network {
+        NetworkConfig::User => handle.ssh_host_port.unwrap_or(22),
+        _ => 22,
+    };
+
+    let key_path = args.key.or_else(find_ssh_key).ok_or_else(|| {
+        miette::miette!(
+            "no SSH key found — provide one with --key or ensure ~/.ssh/id_ed25519, \
+             ~/.ssh/id_ecdsa, or ~/.ssh/id_rsa exists"
+        )
+    })?;
 
     let config = SshConfig {
         user: args.user.clone(),
@@ -44,9 +67,9 @@ pub async fn run(args: SshArgs) -> Result<()> {
         private_key_pem: None,
     };
 
-    println!("Connecting to {}@{}...", args.user, ip);
+    println!("Connecting to {}@{}:{}...", args.user, ip, port);
 
-    let sess = vm_manager::ssh::connect_with_retry(&ip, &config, Duration::from_secs(30))
+    let sess = vm_manager::ssh::connect_with_retry(&ip, port, &config, Duration::from_secs(30))
         .await
         .into_diagnostic()?;
 
@@ -54,21 +77,25 @@ pub async fn run(args: SshArgs) -> Result<()> {
     // We use the system ssh binary for interactive terminal support.
     drop(sess);
 
-    let status = tokio::process::Command::new("ssh")
-        .arg("-o")
+    let mut cmd = tokio::process::Command::new("ssh");
+    cmd.arg("-o")
         .arg("StrictHostKeyChecking=no")
         .arg("-o")
-        .arg("UserKnownHostsFile=/dev/null")
-        .args(
-            config
-                .private_key_path
-                .iter()
-                .flat_map(|p| ["-i".to_string(), p.display().to_string()]),
-        )
-        .arg(format!("{}@{}", args.user, ip))
-        .status()
-        .await
-        .into_diagnostic()?;
+        .arg("UserKnownHostsFile=/dev/null");
+
+    // Add port if non-standard
+    if port != 22 {
+        cmd.arg("-p").arg(port.to_string());
+    }
+
+    // Add key
+    if let Some(ref key) = config.private_key_path {
+        cmd.arg("-i").arg(key);
+    }
+
+    cmd.arg(format!("{}@{}", args.user, ip));
+
+    let status = cmd.status().await.into_diagnostic()?;
 
     if !status.success() {
         miette::bail!("SSH exited with status {}", status);

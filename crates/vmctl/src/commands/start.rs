@@ -11,7 +11,7 @@ pub struct StartArgs {
 }
 
 pub async fn run_start(args: StartArgs) -> Result<()> {
-    let store = state::load_store().await?;
+    let mut store = state::load_store().await?;
     let handle = store.get(&args.name).ok_or_else(|| {
         miette::miette!(
             "VM '{}' not found — run `vmctl list` to see available VMs",
@@ -20,7 +20,11 @@ pub async fn run_start(args: StartArgs) -> Result<()> {
     })?;
 
     let hv = RouterHypervisor::new(None, None);
-    hv.start(handle).await.into_diagnostic()?;
+    let updated = hv.start(handle).await.into_diagnostic()?;
+
+    store.insert(args.name.clone(), updated);
+    state::save_store(&store).await?;
+
     println!("VM '{}' started", args.name);
     Ok(())
 }
@@ -32,13 +36,17 @@ pub struct SuspendArgs {
 }
 
 pub async fn run_suspend(args: SuspendArgs) -> Result<()> {
-    let store = state::load_store().await?;
+    let mut store = state::load_store().await?;
     let handle = store
         .get(&args.name)
         .ok_or_else(|| miette::miette!("VM '{}' not found", args.name))?;
 
     let hv = RouterHypervisor::new(None, None);
-    hv.suspend(handle).await.into_diagnostic()?;
+    let updated = hv.suspend(handle).await.into_diagnostic()?;
+
+    store.insert(args.name.clone(), updated);
+    state::save_store(&store).await?;
+
     println!("VM '{}' suspended", args.name);
     Ok(())
 }
@@ -50,13 +58,17 @@ pub struct ResumeArgs {
 }
 
 pub async fn run_resume(args: ResumeArgs) -> Result<()> {
-    let store = state::load_store().await?;
+    let mut store = state::load_store().await?;
     let handle = store
         .get(&args.name)
         .ok_or_else(|| miette::miette!("VM '{}' not found", args.name))?;
 
     let hv = RouterHypervisor::new(None, None);
-    hv.resume(handle).await.into_diagnostic()?;
+    let updated = hv.resume(handle).await.into_diagnostic()?;
+
+    store.insert(args.name.clone(), updated);
+    state::save_store(&store).await?;
+
     println!("VM '{}' resumed", args.name);
     Ok(())
 }

@@ -34,7 +34,8 @@ pub struct VmSpec {
 }
 
 /// Network configuration for a VM.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "lowercase")]
 pub enum NetworkConfig {
     /// TAP device bridged to a host bridge (default on Linux).
     Tap { bridge: String },
@@ -94,6 +95,32 @@ pub struct VmHandle {
     pub console_socket: Option<PathBuf>,
     /// VNC listen address (e.g. "127.0.0.1:5900").
     pub vnc_addr: Option<String>,
+    /// Number of virtual CPUs allocated to this VM.
+    #[serde(default = "default_vcpus")]
+    pub vcpus: u16,
+    /// Memory in megabytes allocated to this VM.
+    #[serde(default = "default_memory_mb")]
+    pub memory_mb: u64,
+    /// Disk size in GB (overlay resize), if specified.
+    #[serde(default)]
+    pub disk_gb: Option<u32>,
+    /// Network configuration for this VM.
+    #[serde(default)]
+    pub network: NetworkConfig,
+    /// SSH host port for user-mode networking (forwarded to guest port 22).
+    #[serde(default)]
+    pub ssh_host_port: Option<u16>,
+    /// MAC address assigned to this VM.
+    #[serde(default)]
+    pub mac_addr: Option<String>,
+}
+
+fn default_vcpus() -> u16 {
+    1
+}
+
+fn default_memory_mb() -> u64 {
+    1024
 }
 
 /// Observed VM lifecycle state.

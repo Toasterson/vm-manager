@@ -93,7 +93,7 @@ impl Hypervisor for RouterHypervisor {
         self.noop.prepare(spec).await
     }
 
-    async fn start(&self, vm: &VmHandle) -> Result<()> {
+    async fn start(&self, vm: &VmHandle) -> Result<VmHandle> {
         match vm.backend {
             #[cfg(target_os = "linux")]
             BackendTag::Qemu => match self.qemu {
@@ -117,7 +117,7 @@ impl Hypervisor for RouterHypervisor {
         }
     }
 
-    async fn stop(&self, vm: &VmHandle, timeout: Duration) -> Result<()> {
+    async fn stop(&self, vm: &VmHandle, timeout: Duration) -> Result<VmHandle> {
         match vm.backend {
             #[cfg(target_os = "linux")]
             BackendTag::Qemu => match self.qemu {
@@ -141,7 +141,7 @@ impl Hypervisor for RouterHypervisor {
         }
     }
 
-    async fn suspend(&self, vm: &VmHandle) -> Result<()> {
+    async fn suspend(&self, vm: &VmHandle) -> Result<VmHandle> {
         match vm.backend {
             #[cfg(target_os = "linux")]
             BackendTag::Qemu => match self.qemu {
@@ -165,7 +165,7 @@ impl Hypervisor for RouterHypervisor {
         }
     }
 
-    async fn resume(&self, vm: &VmHandle) -> Result<()> {
+    async fn resume(&self, vm: &VmHandle) -> Result<VmHandle> {
         match vm.backend {
             #[cfg(target_os = "linux")]
             BackendTag::Qemu => match self.qemu {
