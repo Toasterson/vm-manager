@@ -1,0 +1,32 @@
+vm "omnios-builder" {
+    image-url "https://downloads.omnios.org/media/stable/omnios-r151056.cloud.qcow2"
+    vcpus 4
+    memory 4096
+    disk 20
+
+    cloud-init {
+        hostname "omnios-builder"
+        ssh-key "~/.ssh/id_ed25519.pub"
+    }
+
+    ssh {
+        user "smithy"
+        private-key "~/.ssh/id_ed25519"
+    }
+
+    // Stage 1: System packages and Rust toolchain
+    provision "shell" {
+        script "scripts/bootstrap-omnios.sh"
+    }
+
+    // Stage 2: Upload forger source
+    provision "file" {
+        source "scripts/forger-src.tar.gz"
+        destination "/tmp/forger-src.tar.gz"
+    }
+
+    // Stage 3: Extract and build forger
+    provision "shell" {
+        script "scripts/install-forger.sh"
+    }
+}
