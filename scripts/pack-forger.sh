@@ -19,6 +19,8 @@ trap 'rm -rf "$STAGING"' EXIT
 
 echo "[pack-forger] Staging forger source ..."
 
+mkdir -p "$STAGING/crates"
+
 # Copy crates
 cp -a "$FORGER_ROOT/crates/forger"      "$STAGING/crates/forger"
 cp -a "$FORGER_ROOT/crates/spec-parser"  "$STAGING/crates/spec-parser"
@@ -26,8 +28,10 @@ cp -a "$FORGER_ROOT/crates/spec-parser"  "$STAGING/crates/spec-parser"
 # Copy image specs
 cp -a "$FORGER_ROOT/images" "$STAGING/images"
 
-# Copy lockfile
-cp "$FORGER_ROOT/Cargo.lock" "$STAGING/Cargo.lock"
+# Copy lockfile if present (reproducible builds)
+if [ -f "$FORGER_ROOT/Cargo.lock" ]; then
+  cp "$FORGER_ROOT/Cargo.lock" "$STAGING/Cargo.lock"
+fi
 
 # Generate a minimal workspace Cargo.toml (only forger + spec-parser)
 cat > "$STAGING/Cargo.toml" <<'TOML'
