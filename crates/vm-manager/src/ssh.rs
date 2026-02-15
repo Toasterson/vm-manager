@@ -204,6 +204,36 @@ pub fn upload(sess: &Session, local: &Path, remote: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Download a remote file to a local path via SFTP.
+pub fn download(sess: &Session, remote: &Path, local: &Path) -> Result<()> {
+    let sftp = sess.sftp().map_err(|e| VmError::SshFailed {
+        detail: format!("SFTP init: {e}"),
+    })?;
+
+    let mut remote_file = sftp.open(remote).map_err(|e| VmError::SshFailed {
+        detail: format!("SFTP open {}: {e}", remote.display()),
+    })?;
+
+    let mut buf = Vec::new();
+    remote_file
+        .read_to_end(&mut buf)
+        .map_err(|e| VmError::SshFailed {
+            detail: format!("SFTP read {}: {e}", remote.display()),
+        })?;
+
+    if let Some(parent) = local.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| VmError::SshFailed {
+            detail: format!("create local dir {}: {e}", parent.display()),
+        })?;
+    }
+
+    std::fs::write(local, &buf).map_err(|e| VmError::SshFailed {
+        detail: format!("write local file {}: {e}", local.display()),
+    })?;
+
+    Ok(())
+}
+
 /// Connect with exponential backoff retry.
 ///
 /// Retries the connection until `timeout` elapses, with exponential backoff capped at 5 seconds.
