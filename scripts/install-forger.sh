@@ -43,4 +43,4 @@ sudo install -m 755 -d /usr/local/bin
 sudo install -m 755 "$DEST/target/release/forger" /usr/local/bin/forger
 
 echo "[install-forger] Done."
-forger --version || true
+/usr/local/bin/forger --version || true
