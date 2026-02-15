@@ -104,15 +104,12 @@ pub fn exec_streaming<W1: std::io::Write, W2: std::io::Write>(
         detail: format!("channel session: {e}"),
     })?;
 
-    // Non-blocking mode so we can interleave stdout and stderr reads
-    sess.set_blocking(false);
-
-    channel.exec(cmd).map_err(|e| {
-        sess.set_blocking(true);
-        VmError::SshFailed {
-            detail: format!("exec '{cmd}': {e}"),
-        }
+    channel.exec(cmd).map_err(|e| VmError::SshFailed {
+        detail: format!("exec '{cmd}': {e}"),
     })?;
+
+    // Switch to non-blocking after exec so we can interleave stdout and stderr reads
+    sess.set_blocking(false);
 
     let mut stdout_buf = Vec::new();
     let mut stderr_buf = Vec::new();
