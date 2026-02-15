@@ -1,0 +1,2788 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>vmctl Documentation</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">vmctl Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/toasty/vm-manager" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p><strong>vmctl</strong> is a command-line tool for creating, managing, and provisioning virtual machines on Linux (QEMU/KVM) and illumos (Propolis/bhyve). It offers both imperative commands for one-off tasks and a declarative configuration format (<code>VMFile.kdl</code>) for reproducible VM environments.</p>
+<h2 id="why-vmctl"><a class="header" href="#why-vmctl">Why vmctl?</a></h2>
+<p>Managing VMs with raw QEMU commands is tedious and error-prone. vmctl handles the plumbing: disk overlays, cloud-init ISOs, SSH key generation, network configuration, and process lifecycle. You describe <em>what</em> you want; vmctl figures out <em>how</em>.</p>
+<p>Think of it like this:</p>
+<div class="table-wrapper"><table><thead><tr><th>Docker world</th><th>vmctl world</th></tr></thead><tbody>
+<tr><td><code>docker run</code></td><td><code>vmctl create --start</code></td></tr>
+<tr><td><code>docker-compose.yml</code></td><td><code>VMFile.kdl</code></td></tr>
+<tr><td><code>docker compose up</code></td><td><code>vmctl up</code></td></tr>
+<tr><td><code>docker compose down</code></td><td><code>vmctl down</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="a-taste"><a class="header" href="#a-taste">A Taste</a></h2>
+<p>Create a <code>VMFile.kdl</code>:</p>
+<pre><code class="language-kdl">vm "dev" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    vcpus 2
+    memory 2048
+
+    cloud-init {
+        hostname "dev"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+
+    provision "shell" {
+        inline "sudo apt-get update &amp;&amp; sudo apt-get install -y build-essential"
+    }
+}
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-bash">vmctl up      # download image, create VM, boot, provision
+vmctl ssh     # connect over SSH
+vmctl down    # shut it down
+</code></pre>
+<h2 id="platform-support"><a class="header" href="#platform-support">Platform Support</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Platform</th><th>Backend</th><th>Status</th></tr></thead><tbody>
+<tr><td>Linux</td><td>QEMU/KVM</td><td>Fully supported</td></tr>
+<tr><td>illumos</td><td>Propolis/bhyve</td><td>Experimental</td></tr>
+</tbody></table>
+</div>
+<h2 id="project-structure"><a class="header" href="#project-structure">Project Structure</a></h2>
+<p>vmctl is split into two crates:</p>
+<ul>
+<li><strong>vm-manager</strong> - Library crate with the hypervisor abstraction, image management, SSH, provisioning, and VMFile parsing.</li>
+<li><strong>vmctl</strong> - CLI binary built on top of vm-manager.</li>
+</ul>
+<p>Both live in a Cargo workspace under <code>crates/</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>vmctl is built from source using Rust's Cargo build system.</p>
+<h2 id="requirements"><a class="header" href="#requirements">Requirements</a></h2>
+<ul>
+<li>Rust 1.85 or later (edition 2024)</li>
+<li>A working C compiler (for native dependencies like libssh2)</li>
+</ul>
+<h2 id="building-from-source"><a class="header" href="#building-from-source">Building from Source</a></h2>
+<p>Clone the repository and build the release binary:</p>
+<pre><code class="language-bash">git clone https://github.com/user/vm-manager.git
+cd vm-manager
+cargo build --release -p vmctl
+</code></pre>
+<p>The binary will be at <code>target/release/vmctl</code>. Copy it somewhere in your <code>$PATH</code>:</p>
+<pre><code class="language-bash">sudo cp target/release/vmctl /usr/local/bin/
+</code></pre>
+<h2 id="feature-flags"><a class="header" href="#feature-flags">Feature Flags</a></h2>
+<p>The <code>vm-manager</code> library crate has one optional feature:</p>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>pure-iso</code></td><td>Use a pure-Rust ISO 9660 generator (<code>isobemak</code>) instead of shelling out to <code>genisoimage</code>/<code>mkisofs</code>. Useful in minimal or containerized environments.</td></tr>
+</tbody></table>
+</div>
+<p>To build with it:</p>
+<pre><code class="language-bash">cargo build --release -p vmctl --features vm-manager/pure-iso
+</code></pre>
+<h2 id="verify-installation"><a class="header" href="#verify-installation">Verify Installation</a></h2>
+<pre><code class="language-bash">vmctl --help
+</code></pre>
+<p>You should see the list of available subcommands.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h1>
+<p>vmctl requires several system tools depending on the backend and features you use.</p>
+<h2 id="linux-qemukvm"><a class="header" href="#linux-qemukvm">Linux (QEMU/KVM)</a></h2>
+<h3 id="required"><a class="header" href="#required">Required</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Tool</th><th>Purpose</th><th>Install (Debian/Ubuntu)</th></tr></thead><tbody>
+<tr><td><code>qemu-system-x86_64</code></td><td>VM hypervisor</td><td><code>sudo apt install qemu-system-x86</code></td></tr>
+<tr><td><code>qemu-img</code></td><td>Disk image operations</td><td><code>sudo apt install qemu-utils</code></td></tr>
+<tr><td><code>/dev/kvm</code></td><td>Hardware virtualization</td><td>Kernel module (usually built-in)</td></tr>
+</tbody></table>
+</div>
+<h3 id="cloud-init-iso-generation-one-of"><a class="header" href="#cloud-init-iso-generation-one-of">Cloud-Init ISO Generation (one of)</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Tool</th><th>Purpose</th><th>Install</th></tr></thead><tbody>
+<tr><td><code>genisoimage</code></td><td>ISO 9660 image creation</td><td><code>sudo apt install genisoimage</code></td></tr>
+<tr><td><code>mkisofs</code></td><td>Alternative ISO tool</td><td><code>sudo apt install mkisofs</code></td></tr>
+</tbody></table>
+</div>
+<p>Or build with the <code>pure-iso</code> feature to avoid needing either.</p>
+<h2 id="verify-everything"><a class="header" href="#verify-everything">Verify Everything</a></h2>
+<pre><code class="language-bash"># QEMU
+qemu-system-x86_64 --version
+
+# qemu-img
+qemu-img --version
+
+# KVM access
+ls -la /dev/kvm
+
+# ISO tools (one of these)
+genisoimage --version 2&gt;/dev/null || mkisofs --version 2&gt;/dev/null
+
+# Your user should be in the kvm group
+groups | grep -q kvm &amp;&amp; echo "kvm: OK" || echo "kvm: add yourself to the kvm group"
+</code></pre>
+<p>If <code>/dev/kvm</code> is not present, enable KVM in your BIOS/UEFI settings (look for "VT-x" or "AMD-V") and ensure the <code>kvm</code> kernel module is loaded:</p>
+<pre><code class="language-bash">sudo modprobe kvm
+sudo modprobe kvm_intel  # or kvm_amd
+</code></pre>
+<h2 id="illumos-propolis"><a class="header" href="#illumos-propolis">illumos (Propolis)</a></h2>
+<p>For the experimental Propolis backend:</p>
+<ul>
+<li>A running <code>propolis-server</code> instance</li>
+<li>ZFS pool (default: <code>rpool</code>)</li>
+<li><code>nebula-vm</code> zone brand installed</li>
+<li>VNIC networking configured</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h1>
+<p>This guide walks you through creating your first VM in under a minute.</p>
+<h2 id="imperative-one-off"><a class="header" href="#imperative-one-off">Imperative (One-Off)</a></h2>
+<p>Create and start a VM from an Ubuntu cloud image:</p>
+<pre><code class="language-bash">vmctl create \
+  --name demo \
+  --image-url https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
+  --vcpus 2 \
+  --memory 2048 \
+  --start
+</code></pre>
+<p>Wait a moment for the image to download and the VM to boot, then connect:</p>
+<pre><code class="language-bash">vmctl ssh demo
+</code></pre>
+<p>When you're done:</p>
+<pre><code class="language-bash">vmctl destroy demo
+</code></pre>
+<h2 id="declarative-reproducible"><a class="header" href="#declarative-reproducible">Declarative (Reproducible)</a></h2>
+<p>Create a <code>VMFile.kdl</code> in your project directory:</p>
+<pre><code class="language-kdl">vm "demo" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    vcpus 2
+    memory 2048
+
+    cloud-init {
+        hostname "demo"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+}
+</code></pre>
+<p>Bring it up:</p>
+<pre><code class="language-bash">vmctl up
+</code></pre>
+<p>vmctl will download the image (cached for future use), create a QCOW2 overlay, generate an Ed25519 SSH keypair, build a cloud-init ISO, and boot the VM.</p>
+<p>Connect:</p>
+<pre><code class="language-bash">vmctl ssh
+</code></pre>
+<p>Tear it down:</p>
+<pre><code class="language-bash">vmctl down
+</code></pre>
+<p>Or destroy it completely (removes all VM files):</p>
+<pre><code class="language-bash">vmctl down --destroy
+</code></pre>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li><a href="getting-started/../concepts/how-it-works.html">Concepts: How vmctl Works</a> for an understanding of what happens under the hood.</li>
+<li><a href="getting-started/../tutorials/declarative-workflow.html">Tutorials: Declarative Workflow</a> for a complete walkthrough with provisioning.</li>
+<li><a href="getting-started/../vmfile/overview.html">VMFile.kdl Reference</a> for the full configuration format.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="how-vmctl-works"><a class="header" href="#how-vmctl-works">How vmctl Works</a></h1>
+<h2 id="state-directory"><a class="header" href="#state-directory">State Directory</a></h2>
+<p>vmctl stores all VM state under <code>$XDG_DATA_HOME/vmctl/</code> (typically <code>~/.local/share/vmctl/</code>):</p>
+<pre><code>~/.local/share/vmctl/
+  vms.json              # VM registry (name -&gt; handle mapping)
+  images/               # Downloaded image cache
+  vms/
+    &lt;vm-name&gt;/          # Per-VM working directory
+      overlay.qcow2     # Copy-on-write disk overlay
+      seed.iso          # Cloud-init NoCloud ISO
+      qmp.sock          # QEMU Machine Protocol socket
+      console.sock      # Serial console socket
+      console.log       # Boot/cloud-init log
+      provision.log     # Provisioning output log
+      id_ed25519_generated      # Auto-generated SSH private key
+      id_ed25519_generated.pub  # Auto-generated SSH public key
+      pidfile            # QEMU process PID
+</code></pre>
+<h2 id="qcow2-overlays"><a class="header" href="#qcow2-overlays">QCOW2 Overlays</a></h2>
+<p>vmctl never modifies the base image directly. Instead, it creates a QCOW2 copy-on-write overlay on top of the original. This means:</p>
+<ul>
+<li>Multiple VMs can share the same base image.</li>
+<li>The base image stays clean in the cache.</li>
+<li>Destroying a VM just deletes the overlay.</li>
+</ul>
+<p>If you specify <code>disk</code> in your VMFile, the overlay is resized to that size and the guest filesystem can be grown.</p>
+<h2 id="routerhypervisor"><a class="header" href="#routerhypervisor">RouterHypervisor</a></h2>
+<p>All hypervisor operations go through a <code>RouterHypervisor</code> that dispatches to the appropriate backend based on the platform:</p>
+<ul>
+<li><strong>Linux</strong> -&gt; <code>QemuBackend</code></li>
+<li><strong>illumos</strong> -&gt; <code>PropolisBackend</code></li>
+<li><strong>Testing</strong> -&gt; <code>NoopBackend</code></li>
+</ul>
+<p>Each backend implements the same <code>Hypervisor</code> trait, so the CLI code is platform-agnostic.</p>
+<h2 id="the-up-flow"><a class="header" href="#the-up-flow">The Up Flow</a></h2>
+<p>When you run <code>vmctl up</code>, the following happens for each VM defined in <code>VMFile.kdl</code>:</p>
+<ol>
+<li><strong>Parse</strong> - Read and validate the VMFile.</li>
+<li><strong>Resolve</strong> - Download images (if URL), generate SSH keys (if cloud-init enabled), resolve paths.</li>
+<li><strong>Prepare</strong> - Create work directory, QCOW2 overlay, cloud-init seed ISO, allocate MAC address and SSH port.</li>
+<li><strong>Start</strong> - Launch QEMU with the correct arguments, wait for QMP socket.</li>
+<li><strong>Provision</strong> - Wait for SSH to become available (up to 120 seconds), then run each provisioner in order.</li>
+</ol>
+<p>If a VM is already running, <code>vmctl up</code> skips it. If it's stopped, it restarts and re-provisions.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="imperative-vs-declarative"><a class="header" href="#imperative-vs-declarative">Imperative vs Declarative</a></h1>
+<p>vmctl supports two workflows for managing VMs.</p>
+<h2 id="imperative"><a class="header" href="#imperative">Imperative</a></h2>
+<p>Use individual commands to create, configure, and manage VMs step by step:</p>
+<pre><code class="language-bash">vmctl create --name myvm --image-url https://example.com/image.img --vcpus 2 --memory 2048 --start
+vmctl ssh myvm
+vmctl stop myvm
+vmctl destroy myvm
+</code></pre>
+<p>This is useful for:</p>
+<ul>
+<li>Quick one-off VMs</li>
+<li>Experimenting with different images</li>
+<li>Scripting custom workflows</li>
+</ul>
+<h2 id="declarative"><a class="header" href="#declarative">Declarative</a></h2>
+<p>Define your VMs in a <code>VMFile.kdl</code> and let vmctl converge to the desired state:</p>
+<pre><code class="language-kdl">vm "myvm" {
+    image-url "https://example.com/image.img"
+    vcpus 2
+    memory 2048
+
+    cloud-init {
+        hostname "myvm"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+
+    provision "shell" {
+        inline "echo hello"
+    }
+}
+</code></pre>
+<pre><code class="language-bash">vmctl up          # create + start + provision
+vmctl down        # stop
+vmctl reload      # destroy + recreate + provision
+vmctl provision   # re-run provisioners only
+</code></pre>
+<p>This is useful for:</p>
+<ul>
+<li>Reproducible development environments</li>
+<li>Multi-VM setups</li>
+<li>Checked-in VM definitions alongside your project</li>
+<li>Complex provisioning workflows</li>
+</ul>
+<h2 id="when-to-use-which"><a class="header" href="#when-to-use-which">When to Use Which</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Scenario</th><th>Approach</th></tr></thead><tbody>
+<tr><td>"I need a quick VM to test something"</td><td>Imperative</td></tr>
+<tr><td>"My project needs a build VM with specific packages"</td><td>Declarative</td></tr>
+<tr><td>"I want to script VM lifecycle in CI"</td><td>Either, depending on complexity</td></tr>
+<tr><td>"Multiple VMs that work together"</td><td>Declarative</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="vm-lifecycle"><a class="header" href="#vm-lifecycle">VM Lifecycle</a></h1>
+<p>Every VM in vmctl moves through a set of well-defined states.</p>
+<h2 id="states"><a class="header" href="#states">States</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>State</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>Preparing</code></td><td>Backend is allocating resources (overlay, ISO, sockets)</td></tr>
+<tr><td><code>Prepared</code></td><td>Resources allocated, ready to boot</td></tr>
+<tr><td><code>Running</code></td><td>VM is booted and executing</td></tr>
+<tr><td><code>Stopped</code></td><td>VM has been shut down (gracefully or forcibly)</td></tr>
+<tr><td><code>Failed</code></td><td>An error occurred during a lifecycle operation</td></tr>
+<tr><td><code>Destroyed</code></td><td>VM and all its resources have been cleaned up</td></tr>
+</tbody></table>
+</div>
+<h2 id="transitions"><a class="header" href="#transitions">Transitions</a></h2>
+<pre><code class="language-text">          prepare()         start()
+[new] ──────────&gt; Prepared ──────────&gt; Running
+                                        │  │
+                            suspend()   │  │  stop(timeout)
+                           ┌────────────┘  └──────────────┐
+                           v                               v
+                        Suspended ─── resume() ──&gt;     Stopped
+                                                        │
+                                           start()      │
+                                     Running &lt;──────────┘
+
+Any state ── destroy() ──&gt; Destroyed
+</code></pre>
+<h2 id="commands-and-transitions"><a class="header" href="#commands-and-transitions">Commands and Transitions</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Command</th><th>From State</th><th>To State</th></tr></thead><tbody>
+<tr><td><code>vmctl create</code></td><td>(none)</td><td>Prepared</td></tr>
+<tr><td><code>vmctl start</code></td><td>Prepared, Stopped</td><td>Running</td></tr>
+<tr><td><code>vmctl stop</code></td><td>Running</td><td>Stopped</td></tr>
+<tr><td><code>vmctl suspend</code></td><td>Running</td><td>Suspended (paused vCPUs)</td></tr>
+<tr><td><code>vmctl resume</code></td><td>Suspended</td><td>Running</td></tr>
+<tr><td><code>vmctl destroy</code></td><td>Any</td><td>Destroyed</td></tr>
+<tr><td><code>vmctl up</code></td><td>(none), Stopped</td><td>Running (auto-creates if needed)</td></tr>
+<tr><td><code>vmctl down</code></td><td>Running</td><td>Stopped</td></tr>
+<tr><td><code>vmctl reload</code></td><td>Any</td><td>Running (destroys + recreates)</td></tr>
+</tbody></table>
+</div>
+<h2 id="graceful-shutdown"><a class="header" href="#graceful-shutdown">Graceful Shutdown</a></h2>
+<p><code>vmctl stop</code> sends an ACPI power-down signal via QMP. If the guest doesn't shut down within the timeout (default 30 seconds), vmctl sends SIGTERM, and finally SIGKILL as a last resort.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="networking-modes"><a class="header" href="#networking-modes">Networking Modes</a></h1>
+<p>vmctl supports several networking modes depending on your needs and permissions.</p>
+<h2 id="user-mode-slirp---default"><a class="header" href="#user-mode-slirp---default">User Mode (SLIRP) - Default</a></h2>
+<pre><code class="language-kdl">network "user"
+</code></pre>
+<p>QEMU's built-in user-mode networking. No root or special permissions required.</p>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>QEMU emulates a full TCP/IP stack in userspace.</li>
+<li>The guest gets a private IP (typically <code>10.0.2.x</code>).</li>
+<li>Outbound connections from the guest are NAT'd through the host.</li>
+<li>SSH access is provided via host port forwarding (ports 10022-10122, deterministically assigned per VM name).</li>
+</ul>
+<p><strong>Pros:</strong> Zero setup, no root needed.
+<strong>Cons:</strong> No inbound connections (except forwarded ports), lower performance than TAP.</p>
+<h2 id="tap-mode"><a class="header" href="#tap-mode">TAP Mode</a></h2>
+<pre><code class="language-kdl">network "tap" {
+    bridge "br0"
+}
+</code></pre>
+<p>Creates a TAP device and attaches it to a host bridge. The guest appears as a real machine on the bridge's network.</p>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>vmctl creates a TAP interface and bridges it.</li>
+<li>The guest gets an IP via DHCP from whatever serves the bridge network.</li>
+<li>Full Layer 2 connectivity.</li>
+</ul>
+<p><strong>Pros:</strong> Real network presence, full inbound/outbound, better performance.
+<strong>Cons:</strong> Requires bridge setup, may need root or appropriate capabilities.</p>
+<p>If no bridge name is specified, it defaults to <code>br0</code>.</p>
+<h2 id="vnic-mode-illumos-only"><a class="header" href="#vnic-mode-illumos-only">VNIC Mode (illumos only)</a></h2>
+<pre><code class="language-kdl">network "vnic" {
+    name "vnic0"
+}
+</code></pre>
+<p>Uses an illumos VNIC for exclusive-IP zone networking. Only available on the Propolis backend.</p>
+<h2 id="none"><a class="header" href="#none">None</a></h2>
+<pre><code class="language-kdl">network "none"
+</code></pre>
+<p>No networking at all. Useful for isolated compute tasks or testing.</p>
+<h2 id="ip-discovery"><a class="header" href="#ip-discovery">IP Discovery</a></h2>
+<p>vmctl discovers the guest IP differently depending on the network mode:</p>
+<div class="table-wrapper"><table><thead><tr><th>Mode</th><th>IP Discovery Method</th></tr></thead><tbody>
+<tr><td>User</td><td>Returns <code>127.0.0.1</code> (SSH via forwarded port)</td></tr>
+<tr><td>TAP</td><td>Parses ARP table (<code>ip neigh show</code>), falls back to dnsmasq lease files by MAC address</td></tr>
+<tr><td>VNIC</td><td>Zone-based discovery</td></tr>
+<tr><td>None</td><td>Not available</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="image-management"><a class="header" href="#image-management">Image Management</a></h1>
+<p>vmctl can work with local disk images or download them from URLs. Downloaded images are cached for reuse.</p>
+<h2 id="image-cache"><a class="header" href="#image-cache">Image Cache</a></h2>
+<p>Downloaded images are stored in <code>~/.local/share/vmctl/images/</code>. If an image already exists in the cache, it won't be re-downloaded.</p>
+<h2 id="supported-formats"><a class="header" href="#supported-formats">Supported Formats</a></h2>
+<p>vmctl uses <code>qemu-img</code> to detect and convert image formats. Common formats:</p>
+<ul>
+<li><strong>qcow2</strong> - QEMU's native format, supports snapshots and compression.</li>
+<li><strong>raw</strong> - Plain disk image.</li>
+</ul>
+<p>The format is auto-detected from the file header.</p>
+<h2 id="zstd-decompression"><a class="header" href="#zstd-decompression">Zstd Decompression</a></h2>
+<p>If a URL ends in <code>.zst</code> or <code>.zstd</code>, vmctl automatically decompresses the image after downloading. This is common for distribution cloud images.</p>
+<h2 id="overlay-system"><a class="header" href="#overlay-system">Overlay System</a></h2>
+<p>vmctl never boots from the base image directly. Instead:</p>
+<ol>
+<li>The base image is stored in the cache (or at a local path you provide).</li>
+<li>A QCOW2 overlay is created on top, pointing to the base as a backing file.</li>
+<li>All writes go to the overlay. The base stays untouched.</li>
+<li>Destroying a VM just removes the overlay.</li>
+</ol>
+<p>This means multiple VMs can share the same base image efficiently.</p>
+<h2 id="disk-resizing"><a class="header" href="#disk-resizing">Disk Resizing</a></h2>
+<p>If you specify <code>disk</code> (in GB) in your VMFile or <code>--disk</code> on the CLI, the overlay is created with that size. The guest OS can then grow its filesystem to fill the available space (most cloud images do this automatically via cloud-init's <code>growpart</code> module).</p>
+<h2 id="managing-images-with-the-cli"><a class="header" href="#managing-images-with-the-cli">Managing Images with the CLI</a></h2>
+<pre><code class="language-bash"># Download an image to the cache
+vmctl image pull https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+
+# List cached images
+vmctl image list
+
+# Inspect a local image
+vmctl image inspect ./my-image.qcow2
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cloud-init-and-ssh-keys"><a class="header" href="#cloud-init-and-ssh-keys">Cloud-Init and SSH Keys</a></h1>
+<p>vmctl uses <a href="https://cloud-init.io/">cloud-init</a> to configure guests on first boot. It generates a NoCloud seed ISO containing user-data and meta-data, which the guest's cloud-init agent picks up automatically.</p>
+<h2 id="ssh-key-modes"><a class="header" href="#ssh-key-modes">SSH Key Modes</a></h2>
+<p>There are three ways to get SSH access to a VM:</p>
+<h3 id="1-auto-generated-keypair-recommended"><a class="header" href="#1-auto-generated-keypair-recommended">1. Auto-Generated Keypair (Recommended)</a></h3>
+<p>When you define a <code>cloud-init</code> block without an explicit <code>ssh-key</code>, vmctl generates a per-VM Ed25519 keypair:</p>
+<pre><code class="language-kdl">cloud-init {
+    hostname "myvm"
+}
+
+ssh {
+    user "ubuntu"
+}
+</code></pre>
+<p>The keys are stored in the VM's work directory:</p>
+<ul>
+<li><code>~/.local/share/vmctl/vms/&lt;name&gt;/id_ed25519_generated</code> (private)</li>
+<li><code>~/.local/share/vmctl/vms/&lt;name&gt;/id_ed25519_generated.pub</code> (public)</li>
+</ul>
+<p>This is the simplest option. No key management required.</p>
+<h3 id="2-explicit-ssh-key"><a class="header" href="#2-explicit-ssh-key">2. Explicit SSH Key</a></h3>
+<p>Point to your own public key file:</p>
+<pre><code class="language-kdl">cloud-init {
+    ssh-key "~/.ssh/id_ed25519.pub"
+}
+
+ssh {
+    user "ubuntu"
+    private-key "~/.ssh/id_ed25519"
+}
+</code></pre>
+<h3 id="3-raw-user-data"><a class="header" href="#3-raw-user-data">3. Raw User-Data</a></h3>
+<p>Provide a complete cloud-config YAML file for full control:</p>
+<pre><code class="language-kdl">cloud-init {
+    user-data "./my-cloud-config.yaml"
+}
+</code></pre>
+<p>In this mode, you're responsible for setting up SSH access yourself in the user-data.</p>
+<h2 id="ssh-key-resolution"><a class="header" href="#ssh-key-resolution">SSH Key Resolution</a></h2>
+<p>When vmctl needs to SSH into a VM (for <code>vmctl ssh</code> or provisioning), it searches for a private key in this order:</p>
+<ol>
+<li>Generated key in the VM's work directory (<code>id_ed25519_generated</code>)</li>
+<li>Key specified with <code>--key</code> flag or <code>private-key</code> in VMFile ssh block</li>
+<li>Standard keys in <code>~/.ssh/</code>: <code>id_ed25519</code>, <code>id_ecdsa</code>, <code>id_rsa</code></li>
+</ol>
+<h2 id="ssh-user-resolution"><a class="header" href="#ssh-user-resolution">SSH User Resolution</a></h2>
+<ol>
+<li><code>--user</code> CLI flag</li>
+<li><code>user</code> in VMFile <code>ssh</code> block</li>
+<li>Default: <code>"vm"</code></li>
+</ol>
+<h2 id="cloud-init-user-setup"><a class="header" href="#cloud-init-user-setup">Cloud-Init User Setup</a></h2>
+<p>When vmctl generates the cloud-config, it creates a user with:</p>
+<ul>
+<li>The specified username</li>
+<li>Passwordless <code>sudo</code> access</li>
+<li>The SSH public key in <code>authorized_keys</code></li>
+<li>Bash as the default shell</li>
+<li>Root login disabled</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="creating-a-vm-imperatively"><a class="header" href="#creating-a-vm-imperatively">Creating a VM Imperatively</a></h1>
+<p>This tutorial walks through the full lifecycle of a VM using individual vmctl commands.</p>
+<h2 id="create-a-vm"><a class="header" href="#create-a-vm">Create a VM</a></h2>
+<pre><code class="language-bash">vmctl create \
+  --name tutorial \
+  --image-url https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img \
+  --vcpus 2 \
+  --memory 2048 \
+  --ssh-key ~/.ssh/id_ed25519.pub
+</code></pre>
+<p>This downloads the image (cached for future use), creates a QCOW2 overlay, generates a cloud-init ISO with your SSH key, and registers the VM.</p>
+<h2 id="start-it"><a class="header" href="#start-it">Start It</a></h2>
+<pre><code class="language-bash">vmctl start tutorial
+</code></pre>
+<h2 id="check-status"><a class="header" href="#check-status">Check Status</a></h2>
+<pre><code class="language-bash">vmctl list
+</code></pre>
+<pre><code class="language-text">NAME             BACKEND  VCPUS   MEM NETWORK     PID      SSH
+tutorial         qemu     2       2048 user       12345    10042
+</code></pre>
+<p>For detailed info:</p>
+<pre><code class="language-bash">vmctl status tutorial
+</code></pre>
+<h2 id="connect-via-ssh"><a class="header" href="#connect-via-ssh">Connect via SSH</a></h2>
+<pre><code class="language-bash">vmctl ssh tutorial
+</code></pre>
+<p>vmctl waits for SSH to become available (cloud-init needs a moment to set up the user), then drops you into a shell.</p>
+<h2 id="suspend-and-resume"><a class="header" href="#suspend-and-resume">Suspend and Resume</a></h2>
+<p>Pause the VM without shutting it down:</p>
+<pre><code class="language-bash">vmctl suspend tutorial
+</code></pre>
+<p>Resume it:</p>
+<pre><code class="language-bash">vmctl resume tutorial
+</code></pre>
+<p>The VM continues from exactly where it was, no reboot needed.</p>
+<h2 id="stop-the-vm"><a class="header" href="#stop-the-vm">Stop the VM</a></h2>
+<pre><code class="language-bash">vmctl stop tutorial
+</code></pre>
+<p>This sends an ACPI power-down signal. If the guest doesn't shut down within 30 seconds, vmctl sends SIGTERM.</p>
+<p>To change the timeout:</p>
+<pre><code class="language-bash">vmctl stop tutorial --timeout 60
+</code></pre>
+<h2 id="restart"><a class="header" href="#restart">Restart</a></h2>
+<p>A stopped VM can be started again:</p>
+<pre><code class="language-bash">vmctl start tutorial
+</code></pre>
+<h2 id="destroy"><a class="header" href="#destroy">Destroy</a></h2>
+<p>When you're done, clean up everything:</p>
+<pre><code class="language-bash">vmctl destroy tutorial
+</code></pre>
+<p>This stops the VM (if running), removes the overlay, cloud-init ISO, and all work directory files, and unregisters the VM from the store.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="declarative-workflow-with-vmfilekdl"><a class="header" href="#declarative-workflow-with-vmfilekdl">Declarative Workflow with VMFile.kdl</a></h1>
+<p>This tutorial shows how to define VMs in a configuration file and manage them with <code>vmctl up</code>/<code>down</code>.</p>
+<h2 id="write-a-vmfile"><a class="header" href="#write-a-vmfile">Write a VMFile</a></h2>
+<p>Create <code>VMFile.kdl</code> in your project directory:</p>
+<pre><code class="language-kdl">vm "webserver" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    vcpus 2
+    memory 2048
+    disk 20
+
+    cloud-init {
+        hostname "webserver"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+
+    provision "shell" {
+        inline "sudo apt-get update &amp;&amp; sudo apt-get install -y nginx"
+    }
+
+    provision "shell" {
+        inline "echo 'Hello from vmctl!' | sudo tee /var/www/html/index.html"
+    }
+}
+</code></pre>
+<h2 id="bring-it-up"><a class="header" href="#bring-it-up">Bring It Up</a></h2>
+<pre><code class="language-bash">vmctl up
+</code></pre>
+<p>vmctl will:</p>
+<ol>
+<li>Discover <code>VMFile.kdl</code> in the current directory.</li>
+<li>Download the Ubuntu image (or use the cached copy).</li>
+<li>Generate an Ed25519 SSH keypair for this VM.</li>
+<li>Create a QCOW2 overlay with 20GB disk.</li>
+<li>Build a cloud-init ISO with the hostname and generated SSH key.</li>
+<li>Boot the VM.</li>
+<li>Wait for SSH to become available.</li>
+<li>Run the provision steps in order, streaming output to your terminal.</li>
+</ol>
+<h2 id="connect"><a class="header" href="#connect">Connect</a></h2>
+<pre><code class="language-bash">vmctl ssh
+</code></pre>
+<p>When there's only one VM in the VMFile, you don't need to specify the name.</p>
+<h2 id="make-changes"><a class="header" href="#make-changes">Make Changes</a></h2>
+<p>Edit <code>VMFile.kdl</code> to add another provisioner, then reload:</p>
+<pre><code class="language-bash">vmctl reload
+</code></pre>
+<p>This destroys the existing VM and recreates it from scratch with the updated definition.</p>
+<p>To re-run just the provisioners without recreating:</p>
+<pre><code class="language-bash">vmctl provision
+</code></pre>
+<h2 id="bring-it-down"><a class="header" href="#bring-it-down">Bring It Down</a></h2>
+<p>Stop the VM:</p>
+<pre><code class="language-bash">vmctl down
+</code></pre>
+<p>Or stop and destroy:</p>
+<pre><code class="language-bash">vmctl down --destroy
+</code></pre>
+<h2 id="filtering-by-name"><a class="header" href="#filtering-by-name">Filtering by Name</a></h2>
+<p>If your VMFile defines multiple VMs, use <code>--name</code> to target a specific one:</p>
+<pre><code class="language-bash">vmctl up --name webserver
+vmctl ssh --name webserver
+vmctl down --name webserver
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="provisioning"><a class="header" href="#provisioning">Provisioning</a></h1>
+<p>Provisioners run commands and upload files to a VM after it boots. They execute in order and stop on the first failure.</p>
+<h2 id="provision-types"><a class="header" href="#provision-types">Provision Types</a></h2>
+<h3 id="shell-with-inline-command"><a class="header" href="#shell-with-inline-command">Shell with Inline Command</a></h3>
+<p>Execute a command directly on the guest:</p>
+<pre><code class="language-kdl">provision "shell" {
+    inline "sudo apt-get update &amp;&amp; sudo apt-get install -y curl"
+}
+</code></pre>
+<h3 id="shell-with-script-file"><a class="header" href="#shell-with-script-file">Shell with Script File</a></h3>
+<p>Upload and execute a local script:</p>
+<pre><code class="language-kdl">provision "shell" {
+    script "scripts/setup.sh"
+}
+</code></pre>
+<p>The script is uploaded to <code>/tmp/vmctl-provision-&lt;step&gt;.sh</code> on the guest, made executable, and run. Paths are relative to the directory containing <code>VMFile.kdl</code>.</p>
+<h3 id="file-upload"><a class="header" href="#file-upload">File Upload</a></h3>
+<p>Upload a file to the guest via SFTP:</p>
+<pre><code class="language-kdl">provision "file" {
+    source "config/nginx.conf"
+    destination "/tmp/nginx.conf"
+}
+</code></pre>
+<h2 id="execution-details"><a class="header" href="#execution-details">Execution Details</a></h2>
+<ul>
+<li>Shell provisioners stream stdout/stderr to your terminal in real-time.</li>
+<li>A non-zero exit code aborts the entire provisioning sequence.</li>
+<li>Output is logged to <code>provision.log</code> in the VM's work directory.</li>
+<li>vmctl waits up to 120 seconds for SSH to become available before provisioning starts.</li>
+</ul>
+<h2 id="multi-stage-example"><a class="header" href="#multi-stage-example">Multi-Stage Example</a></h2>
+<p>A common pattern is to combine file uploads with shell commands:</p>
+<pre><code class="language-kdl">vm "builder" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    vcpus 4
+    memory 4096
+
+    cloud-init {
+        hostname "builder"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+
+    // Stage 1: Install dependencies
+    provision "shell" {
+        inline "sudo apt-get update &amp;&amp; sudo apt-get install -y build-essential"
+    }
+
+    // Stage 2: Upload source code
+    provision "file" {
+        source "src.tar.gz"
+        destination "/tmp/src.tar.gz"
+    }
+
+    // Stage 3: Build
+    provision "shell" {
+        inline "cd /tmp &amp;&amp; tar xzf src.tar.gz &amp;&amp; cd src &amp;&amp; make"
+    }
+}
+</code></pre>
+<h2 id="re-running-provisioners"><a class="header" href="#re-running-provisioners">Re-Running Provisioners</a></h2>
+<p>To re-run provisioners on an already-running VM:</p>
+<pre><code class="language-bash">vmctl provision
+</code></pre>
+<p>Or for a specific VM:</p>
+<pre><code class="language-bash">vmctl provision --name builder
+</code></pre>
+<h2 id="viewing-provision-logs"><a class="header" href="#viewing-provision-logs">Viewing Provision Logs</a></h2>
+<pre><code class="language-bash">vmctl log builder --provision
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="real-world-omnios-builder-vm"><a class="header" href="#real-world-omnios-builder-vm">Real-World: OmniOS Builder VM</a></h1>
+<p>This tutorial walks through the real-world VMFile.kdl used in the vm-manager project itself to build software on OmniOS (an illumos distribution).</p>
+<h2 id="the-goal"><a class="header" href="#the-goal">The Goal</a></h2>
+<p>Build a Rust binary (<code>forger</code>) on OmniOS. This requires:</p>
+<ol>
+<li>An OmniOS cloud VM with development tools.</li>
+<li>Uploading the source code.</li>
+<li>Compiling on the guest.</li>
+</ol>
+<h2 id="the-vmfile"><a class="header" href="#the-vmfile">The VMFile</a></h2>
+<pre><code class="language-kdl">vm "omnios-builder" {
+    image-url "https://downloads.omnios.org/media/stable/omnios-r151056.cloud.qcow2"
+    vcpus 4
+    memory 4096
+    disk 20
+
+    cloud-init {
+        hostname "omnios-builder"
+    }
+
+    ssh {
+        user "smithy"
+    }
+
+    provision "shell" {
+        script "scripts/bootstrap-omnios.sh"
+    }
+
+    provision "file" {
+        source "scripts/forger-src.tar.gz"
+        destination "/tmp/forger-src.tar.gz"
+    }
+
+    provision "shell" {
+        script "scripts/install-forger.sh"
+    }
+}
+</code></pre>
+<h2 id="stage-1-bootstrap-bootstrap-omniossh"><a class="header" href="#stage-1-bootstrap-bootstrap-omniossh">Stage 1: Bootstrap (<code>bootstrap-omnios.sh</code>)</a></h2>
+<p>This script installs system packages and the Rust toolchain:</p>
+<ul>
+<li>Sets up PATH for GNU tools (OmniOS ships BSD-style tools by default).</li>
+<li>Installs <code>gcc14</code>, <code>gnu-make</code>, <code>pkg-config</code>, <code>openssl</code>, <code>curl</code>, <code>git</code>, and other build dependencies via IPS (<code>pkg install</code>).</li>
+<li>Installs Rust via <code>rustup</code>.</li>
+<li>Verifies all tools are available.</li>
+</ul>
+<h2 id="stage-2-upload-source"><a class="header" href="#stage-2-upload-source">Stage 2: Upload Source</a></h2>
+<p>The <code>file</code> provisioner uploads a pre-packed tarball of the forger source code. This tarball is created beforehand with:</p>
+<pre><code class="language-bash">./scripts/pack-forger.sh
+</code></pre>
+<p>The pack script:</p>
+<ul>
+<li>Copies <code>crates/forger</code>, <code>crates/spec-parser</code>, and <code>images/</code> into a staging directory.</li>
+<li>Generates a minimal workspace <code>Cargo.toml</code>.</li>
+<li>Includes <code>Cargo.lock</code> for reproducible builds.</li>
+<li>Creates <code>scripts/forger-src.tar.gz</code>.</li>
+</ul>
+<h2 id="stage-3-build-and-install-install-forgersh"><a class="header" href="#stage-3-build-and-install-install-forgersh">Stage 3: Build and Install (<code>install-forger.sh</code>)</a></h2>
+<ul>
+<li>Extracts the tarball to <code>$HOME/forger</code>.</li>
+<li>Runs <code>cargo build -p forger --release</code>.</li>
+<li>Copies the binary to <code>/usr/local/bin/forger</code>.</li>
+</ul>
+<h2 id="the-full-workflow"><a class="header" href="#the-full-workflow">The Full Workflow</a></h2>
+<pre><code class="language-bash"># Pack the source on the host
+./scripts/pack-forger.sh
+
+# Bring up the VM, provision, and build
+vmctl up
+
+# SSH in to test the binary
+vmctl ssh
+forger --help
+
+# Tear it down when done
+vmctl down --destroy
+</code></pre>
+<h2 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h2>
+<ul>
+<li><strong>Multi-stage provisioning</strong> separates concerns: system setup, source upload, build.</li>
+<li><strong>File provisioners</strong> transfer artifacts to the guest.</li>
+<li><strong>Script provisioners</strong> are easier to iterate on than inline commands for complex logic.</li>
+<li><strong>Streaming output</strong> lets you watch the build progress in real-time.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmfilekdl-overview"><a class="header" href="#vmfilekdl-overview">VMFile.kdl Overview</a></h1>
+<p><code>VMFile.kdl</code> is the declarative configuration format for vmctl. It uses <a href="https://kdl.dev">KDL</a> (KDL Document Language), a human-friendly configuration language.</p>
+<h2 id="discovery"><a class="header" href="#discovery">Discovery</a></h2>
+<p>vmctl looks for <code>VMFile.kdl</code> in the current directory by default. You can override this with <code>--file</code>:</p>
+<pre><code class="language-bash">vmctl up --file path/to/MyVMFile.kdl
+</code></pre>
+<h2 id="basic-structure"><a class="header" href="#basic-structure">Basic Structure</a></h2>
+<p>A VMFile contains one or more <code>vm</code> blocks, each defining a virtual machine:</p>
+<pre><code class="language-kdl">vm "name" {
+    // image source (required)
+    // resources
+    // networking
+    // cloud-init
+    // ssh config
+    // provisioners
+}
+</code></pre>
+<h2 id="path-resolution"><a class="header" href="#path-resolution">Path Resolution</a></h2>
+<p>All paths in a VMFile are resolved relative to the directory containing the VMFile. Tilde (<code>~</code>) is expanded to the user's home directory.</p>
+<pre><code class="language-kdl">// Relative to VMFile directory
+image "images/ubuntu.qcow2"
+
+// Absolute path
+image "/opt/images/ubuntu.qcow2"
+
+// Home directory expansion
+cloud-init {
+    ssh-key "~/.ssh/id_ed25519.pub"
+}
+</code></pre>
+<h2 id="validation"><a class="header" href="#validation">Validation</a></h2>
+<p>vmctl validates the VMFile on parse and provides detailed error messages with hints:</p>
+<ul>
+<li>VM names must be unique.</li>
+<li>Each VM must have exactly one image source (<code>image</code> or <code>image-url</code>, not both).</li>
+<li>Shell provisioners must have exactly one of <code>inline</code> or <code>script</code>.</li>
+<li>File provisioners must have both <code>source</code> and <code>destination</code>.</li>
+<li>Network type must be <code>"user"</code>, <code>"tap"</code>, or <code>"none"</code>.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vm-block"><a class="header" href="#vm-block">VM Block</a></h1>
+<p>The <code>vm</code> block is the top-level element in a VMFile. It defines a single virtual machine.</p>
+<h2 id="syntax"><a class="header" href="#syntax">Syntax</a></h2>
+<pre><code class="language-kdl">vm "name" {
+    // configuration nodes
+}
+</code></pre>
+<p>The name is a required string argument. It must be unique across all <code>vm</code> blocks in the file.</p>
+<h2 id="example"><a class="header" href="#example">Example</a></h2>
+<pre><code class="language-kdl">vm "dev-server" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    vcpus 2
+    memory 2048
+    disk 20
+
+    cloud-init {
+        hostname "dev-server"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+}
+</code></pre>
+<h2 id="name-requirements"><a class="header" href="#name-requirements">Name Requirements</a></h2>
+<ul>
+<li>Must be a non-empty string.</li>
+<li>Must be unique within the VMFile.</li>
+<li>Used as the VM identifier in <code>vmctl list</code>, <code>vmctl ssh</code>, <code>--name</code> filtering, etc.</li>
+<li>Used as the work directory name under <code>~/.local/share/vmctl/vms/</code>.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="image-sources"><a class="header" href="#image-sources">Image Sources</a></h1>
+<p>Every VM must specify exactly one image source. The two options are mutually exclusive.</p>
+<h2 id="local-image"><a class="header" href="#local-image">Local Image</a></h2>
+<pre><code class="language-kdl">image "path/to/image.qcow2"
+</code></pre>
+<p>Points to a disk image on the host filesystem. The path is resolved relative to the VMFile directory, with tilde expansion.</p>
+<p>The file must exist at parse time. Supported formats are auto-detected by <code>qemu-img</code> (qcow2, raw, etc.).</p>
+<h2 id="remote-image"><a class="header" href="#remote-image">Remote Image</a></h2>
+<pre><code class="language-kdl">image-url "https://example.com/image.qcow2"
+</code></pre>
+<p>Downloads the image and caches it in <code>~/.local/share/vmctl/images/</code>. If the image is already cached, it won't be re-downloaded.</p>
+<p>URLs ending in <code>.zst</code> or <code>.zstd</code> are automatically decompressed after download.</p>
+<h2 id="validation-1"><a class="header" href="#validation-1">Validation</a></h2>
+<ul>
+<li>Exactly one of <code>image</code> or <code>image-url</code> must be specified.</li>
+<li>Specifying both is an error.</li>
+<li>Specifying neither is an error.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="resources"><a class="header" href="#resources">Resources</a></h1>
+<p>Resource nodes control the VM's CPU, memory, and disk allocation.</p>
+<h2 id="vcpus"><a class="header" href="#vcpus">vcpus</a></h2>
+<pre><code class="language-kdl">vcpus 2
+</code></pre>
+<p>Number of virtual CPUs. Must be greater than 0.</p>
+<p><strong>Default:</strong> <code>1</code></p>
+<h2 id="memory"><a class="header" href="#memory">memory</a></h2>
+<pre><code class="language-kdl">memory 2048
+</code></pre>
+<p>Memory in megabytes. Must be greater than 0.</p>
+<p><strong>Default:</strong> <code>1024</code> (1 GB)</p>
+<h2 id="disk"><a class="header" href="#disk">disk</a></h2>
+<pre><code class="language-kdl">disk 20
+</code></pre>
+<p>Disk size in gigabytes. When specified, the QCOW2 overlay is created with this size, allowing the guest to use more space than the base image provides. Most cloud images auto-grow the filesystem via cloud-init.</p>
+<p><strong>Default:</strong> not set (overlay matches base image size)</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="network-block"><a class="header" href="#network-block">Network Block</a></h1>
+<p>The <code>network</code> node configures VM networking.</p>
+<h2 id="syntax-1"><a class="header" href="#syntax-1">Syntax</a></h2>
+<pre><code class="language-kdl">network "mode"
+// or
+network "mode" {
+    // mode-specific attributes
+}
+</code></pre>
+<h2 id="modes"><a class="header" href="#modes">Modes</a></h2>
+<h3 id="user-default"><a class="header" href="#user-default">User (Default)</a></h3>
+<pre><code class="language-kdl">network "user"
+</code></pre>
+<p>QEMU's SLIRP user-mode networking. No root required. SSH access is via a forwarded host port.</p>
+<h3 id="tap"><a class="header" href="#tap">TAP</a></h3>
+<pre><code class="language-kdl">network "tap"
+// or with explicit bridge:
+network "tap" {
+    bridge "br0"
+}
+</code></pre>
+<p>TAP device attached to a Linux bridge. The guest appears on the bridge's network with a real IP.</p>
+<p><strong>Default bridge:</strong> <code>"br0"</code></p>
+<h3 id="none-1"><a class="header" href="#none-1">None</a></h3>
+<pre><code class="language-kdl">network "none"
+</code></pre>
+<p>No networking.</p>
+<h2 id="default"><a class="header" href="#default">Default</a></h2>
+<p>If no <code>network</code> node is specified, user-mode networking is used.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="cloud-init-block"><a class="header" href="#cloud-init-block">Cloud-Init Block</a></h1>
+<p>The <code>cloud-init</code> block configures guest initialization via cloud-init's NoCloud datasource.</p>
+<h2 id="syntax-2"><a class="header" href="#syntax-2">Syntax</a></h2>
+<pre><code class="language-kdl">cloud-init {
+    hostname "myvm"
+    ssh-key "~/.ssh/id_ed25519.pub"
+    user-data "path/to/cloud-config.yaml"
+}
+</code></pre>
+<p>All fields are optional.</p>
+<h2 id="fields"><a class="header" href="#fields">Fields</a></h2>
+<h3 id="hostname"><a class="header" href="#hostname">hostname</a></h3>
+<pre><code class="language-kdl">hostname "myvm"
+</code></pre>
+<p>Sets the guest hostname via cloud-init metadata.</p>
+<h3 id="ssh-key"><a class="header" href="#ssh-key">ssh-key</a></h3>
+<pre><code class="language-kdl">ssh-key "~/.ssh/id_ed25519.pub"
+</code></pre>
+<p>Path to an SSH public key file. The key is injected into the cloud-config's <code>authorized_keys</code> for the SSH user. Path is resolved relative to the VMFile directory.</p>
+<h3 id="user-data"><a class="header" href="#user-data">user-data</a></h3>
+<pre><code class="language-kdl">user-data "cloud-config.yaml"
+</code></pre>
+<p>Path to a raw cloud-config YAML file. When this is set, vmctl passes the file contents directly as user-data without generating its own cloud-config. You are responsible for user creation and SSH setup.</p>
+<p><strong>Mutually exclusive with <code>ssh-key</code></strong> in practice - if you provide raw user-data, vmctl won't inject any SSH keys.</p>
+<h2 id="auto-generated-ssh-keys"><a class="header" href="#auto-generated-ssh-keys">Auto-Generated SSH Keys</a></h2>
+<p>When a <code>cloud-init</code> block is present but neither <code>ssh-key</code> nor <code>user-data</code> is specified, vmctl automatically:</p>
+<ol>
+<li>Generates a per-VM Ed25519 keypair.</li>
+<li>Injects the public key into the cloud-config.</li>
+<li>Stores both keys in the VM's work directory.</li>
+</ol>
+<p>This is the recommended approach for most use cases.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ssh-block"><a class="header" href="#ssh-block">SSH Block</a></h1>
+<p>The <code>ssh</code> block tells vmctl how to connect to the guest for provisioning and <code>vmctl ssh</code>.</p>
+<h2 id="syntax-3"><a class="header" href="#syntax-3">Syntax</a></h2>
+<pre><code class="language-kdl">ssh {
+    user "ubuntu"
+    private-key "~/.ssh/id_ed25519"
+}
+</code></pre>
+<h2 id="fields-1"><a class="header" href="#fields-1">Fields</a></h2>
+<h3 id="user"><a class="header" href="#user">user</a></h3>
+<pre><code class="language-kdl">user "ubuntu"
+</code></pre>
+<p>The SSH username to connect as. This should match the user created by cloud-init.</p>
+<p><strong>Default:</strong> <code>"vm"</code> (used when the ssh block exists but <code>user</code> is omitted)</p>
+<h3 id="private-key"><a class="header" href="#private-key">private-key</a></h3>
+<pre><code class="language-kdl">private-key "~/.ssh/id_ed25519"
+</code></pre>
+<p>Path to the SSH private key for authentication. Path is resolved relative to the VMFile directory.</p>
+<p><strong>Default:</strong> When omitted, vmctl uses the auto-generated key if available, or falls back to standard keys in <code>~/.ssh/</code>.</p>
+<h2 id="when-to-include"><a class="header" href="#when-to-include">When to Include</a></h2>
+<p>The <code>ssh</code> block is required if you want to:</p>
+<ul>
+<li>Use <code>vmctl ssh</code> with VMFile-based name inference.</li>
+<li>Run provisioners (they connect via SSH).</li>
+</ul>
+<p>If you only use imperative commands and don't need provisioning, the ssh block is optional.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="provision-blocks"><a class="header" href="#provision-blocks">Provision Blocks</a></h1>
+<p>Provision blocks define steps to run on the guest after boot. They execute in order and abort on the first failure.</p>
+<h2 id="shell-provisioner"><a class="header" href="#shell-provisioner">Shell Provisioner</a></h2>
+<h3 id="inline-command"><a class="header" href="#inline-command">Inline Command</a></h3>
+<pre><code class="language-kdl">provision "shell" {
+    inline "sudo apt-get update &amp;&amp; sudo apt-get install -y nginx"
+}
+</code></pre>
+<p>Executes the command directly on the guest via SSH.</p>
+<h3 id="script-file"><a class="header" href="#script-file">Script File</a></h3>
+<pre><code class="language-kdl">provision "shell" {
+    script "scripts/setup.sh"
+}
+</code></pre>
+<p>The script file is uploaded to <code>/tmp/vmctl-provision-&lt;step&gt;.sh</code> on the guest, made executable with <code>chmod +x</code>, and executed. The path is resolved relative to the VMFile directory.</p>
+<h3 id="validation-2"><a class="header" href="#validation-2">Validation</a></h3>
+<p>A shell provisioner must have exactly one of <code>inline</code> or <code>script</code>. Specifying both or neither is an error.</p>
+<h2 id="file-provisioner"><a class="header" href="#file-provisioner">File Provisioner</a></h2>
+<pre><code class="language-kdl">provision "file" {
+    source "config/app.conf"
+    destination "/etc/app/app.conf"
+}
+</code></pre>
+<p>Uploads a local file to the guest via SFTP.</p>
+<h3 id="required-fields"><a class="header" href="#required-fields">Required Fields</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>source</code></td><td>Local file path (relative to VMFile directory)</td></tr>
+<tr><td><code>destination</code></td><td>Absolute path on the guest</td></tr>
+</tbody></table>
+</div>
+<h2 id="execution-behavior"><a class="header" href="#execution-behavior">Execution Behavior</a></h2>
+<ul>
+<li>Provisioners run sequentially in the order they appear.</li>
+<li>Shell provisioners stream stdout and stderr to your terminal in real-time.</li>
+<li>A non-zero exit code from any shell provisioner aborts the sequence.</li>
+<li>All output is also logged to <code>provision.log</code> in the VM's work directory.</li>
+<li>vmctl waits up to 120 seconds for SSH to become available before starting provisioners.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="multi-vm-definitions"><a class="header" href="#multi-vm-definitions">Multi-VM Definitions</a></h1>
+<p>A VMFile can define multiple VMs. Each <code>vm</code> block is independent.</p>
+<h2 id="example-1"><a class="header" href="#example-1">Example</a></h2>
+<pre><code class="language-kdl">vm "web" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    vcpus 2
+    memory 2048
+
+    cloud-init {
+        hostname "web"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+
+    provision "shell" {
+        inline "sudo apt-get update &amp;&amp; sudo apt-get install -y nginx"
+    }
+}
+
+vm "db" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    vcpus 2
+    memory 4096
+    disk 50
+
+    cloud-init {
+        hostname "db"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+
+    provision "shell" {
+        inline "sudo apt-get update &amp;&amp; sudo apt-get install -y postgresql"
+    }
+}
+</code></pre>
+<h2 id="behavior-with-multi-vm"><a class="header" href="#behavior-with-multi-vm">Behavior with Multi-VM</a></h2>
+<ul>
+<li><code>vmctl up</code> brings up all VMs in order.</li>
+<li><code>vmctl down</code> stops all VMs.</li>
+<li><code>vmctl ssh</code> requires <code>--name</code> when multiple VMs are defined (or it will error).</li>
+<li>Use <code>--name</code> with any command to target a specific VM.</li>
+</ul>
+<h2 id="filtering"><a class="header" href="#filtering">Filtering</a></h2>
+<pre><code class="language-bash">vmctl up --name web          # only bring up "web"
+vmctl provision --name db    # re-provision only "db"
+vmctl down --name web        # stop only "web"
+</code></pre>
+<h2 id="constraints"><a class="header" href="#constraints">Constraints</a></h2>
+<ul>
+<li>VM names must be unique within the file.</li>
+<li>Each VM is fully independent (no shared networking or cross-references).</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="full-example"><a class="header" href="#full-example">Full Example</a></h1>
+<p>A complete VMFile.kdl demonstrating every available feature:</p>
+<pre><code class="language-kdl">// Development VM with all options specified
+vm "full-example" {
+    // Image source: URL (auto-cached)
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+
+    // Resources
+    vcpus 4
+    memory 4096
+    disk 40
+
+    // Networking: user-mode (default, no root needed)
+    network "user"
+
+    // Cloud-init guest configuration
+    cloud-init {
+        hostname "full-example"
+        // ssh-key and user-data are omitted, so vmctl auto-generates an Ed25519 keypair
+    }
+
+    // SSH connection settings
+    ssh {
+        user "ubuntu"
+        // private-key is omitted, so vmctl uses the auto-generated key
+    }
+
+    // Provisioners run in order after boot
+    provision "shell" {
+        inline "sudo apt-get update &amp;&amp; sudo apt-get install -y build-essential curl git"
+    }
+
+    provision "file" {
+        source "config/bashrc"
+        destination "/home/ubuntu/.bashrc"
+    }
+
+    provision "shell" {
+        script "scripts/setup-dev-tools.sh"
+    }
+}
+
+// Second VM demonstrating TAP networking and explicit keys
+vm "tap-example" {
+    image "~/images/debian-12-generic-amd64.qcow2"
+
+    vcpus 2
+    memory 2048
+
+    network "tap" {
+        bridge "br0"
+    }
+
+    cloud-init {
+        hostname "tap-vm"
+        ssh-key "~/.ssh/id_ed25519.pub"
+    }
+
+    ssh {
+        user "debian"
+        private-key "~/.ssh/id_ed25519"
+    }
+}
+
+// Minimal VM: just an image and defaults
+vm "minimal" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+}
+</code></pre>
+<h2 id="what-happens"><a class="header" href="#what-happens">What Happens</a></h2>
+<p>Running <code>vmctl up</code> with this VMFile:</p>
+<ol>
+<li><strong>full-example</strong>: Downloads the Ubuntu image, creates a 40GB overlay, auto-generates SSH keys, boots with 4 vCPUs / 4GB RAM, runs three provisioners.</li>
+<li><strong>tap-example</strong>: Uses a local Debian image, sets up TAP networking on <code>br0</code>, injects your existing SSH key.</li>
+<li><strong>minimal</strong>: Downloads the same Ubuntu image (cache hit), boots with defaults (1 vCPU, 1GB RAM, user networking), no cloud-init, no provisioning.</li>
+</ol>
+<p>Use <code>--name</code> to target specific VMs:</p>
+<pre><code class="language-bash">vmctl up --name full-example
+vmctl ssh --name tap-example
+vmctl down --name minimal
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl"><a class="header" href="#vmctl">vmctl</a></h1>
+<p>The main entry point for the vmctl CLI.</p>
+<h2 id="synopsis"><a class="header" href="#synopsis">Synopsis</a></h2>
+<pre><code>vmctl &lt;COMMAND&gt;
+</code></pre>
+<h2 id="commands"><a class="header" href="#commands">Commands</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>create</code></td><td>Create a new VM</td></tr>
+<tr><td><code>start</code></td><td>Start an existing VM</td></tr>
+<tr><td><code>stop</code></td><td>Stop a running VM</td></tr>
+<tr><td><code>destroy</code></td><td>Destroy a VM and clean up resources</td></tr>
+<tr><td><code>list</code></td><td>List all VMs</td></tr>
+<tr><td><code>status</code></td><td>Show detailed VM status</td></tr>
+<tr><td><code>console</code></td><td>Attach to serial console</td></tr>
+<tr><td><code>ssh</code></td><td>SSH into a VM</td></tr>
+<tr><td><code>suspend</code></td><td>Suspend (pause) a running VM</td></tr>
+<tr><td><code>resume</code></td><td>Resume a suspended VM</td></tr>
+<tr><td><code>image</code></td><td>Manage VM images</td></tr>
+<tr><td><code>up</code></td><td>Bring up VMs from VMFile.kdl</td></tr>
+<tr><td><code>down</code></td><td>Bring down VMs from VMFile.kdl</td></tr>
+<tr><td><code>reload</code></td><td>Destroy and recreate VMs from VMFile.kdl</td></tr>
+<tr><td><code>provision</code></td><td>Re-run provisioners from VMFile.kdl</td></tr>
+<tr><td><code>log</code></td><td>Show VM logs</td></tr>
+</tbody></table>
+</div>
+<h2 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Variable</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>RUST_LOG</code></td><td>Control log verbosity (e.g., <code>RUST_LOG=debug vmctl up</code>)</td></tr>
+<tr><td><code>XDG_DATA_HOME</code></td><td>Override data directory (default: <code>~/.local/share</code>)</td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-create"><a class="header" href="#vmctl-create">vmctl create</a></h1>
+<p>Create a new VM and optionally start it.</p>
+<h2 id="synopsis-1"><a class="header" href="#synopsis-1">Synopsis</a></h2>
+<pre><code>vmctl create [OPTIONS] --name &lt;NAME&gt;
+</code></pre>
+<h2 id="options"><a class="header" href="#options">Options</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>--name</code></td><td>string</td><td><em>required</em></td><td>VM name</td></tr>
+<tr><td><code>--image</code></td><td>path</td><td></td><td>Path to a local disk image</td></tr>
+<tr><td><code>--image-url</code></td><td>string</td><td></td><td>URL to download an image from</td></tr>
+<tr><td><code>--vcpus</code></td><td>integer</td><td><code>1</code></td><td>Number of virtual CPUs</td></tr>
+<tr><td><code>--memory</code></td><td>integer</td><td><code>1024</code></td><td>Memory in MB</td></tr>
+<tr><td><code>--disk</code></td><td>integer</td><td></td><td>Disk size in GB (overlay resize)</td></tr>
+<tr><td><code>--bridge</code></td><td>string</td><td></td><td>Bridge name for TAP networking</td></tr>
+<tr><td><code>--cloud-init</code></td><td>path</td><td></td><td>Path to cloud-init user-data file</td></tr>
+<tr><td><code>--ssh-key</code></td><td>path</td><td></td><td>Path to SSH public key file</td></tr>
+<tr><td><code>--start</code></td><td>flag</td><td><code>false</code></td><td>Start the VM after creation</td></tr>
+</tbody></table>
+</div>
+<h2 id="details"><a class="header" href="#details">Details</a></h2>
+<p>One of <code>--image</code> or <code>--image-url</code> must be provided. If <code>--image-url</code> is given, the image is downloaded and cached.</p>
+<p>When <code>--bridge</code> is specified, TAP networking is used. Otherwise, user-mode (SLIRP) networking is used.</p>
+<p>When <code>--ssh-key</code> is provided, a cloud-init ISO is generated that injects the public key. The SSH user defaults to <code>"vm"</code>.</p>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<pre><code class="language-bash"># Create from a URL with defaults
+vmctl create --name myvm --image-url https://example.com/image.img
+
+# Create with custom resources and start immediately
+vmctl create --name myvm \
+  --image-url https://example.com/image.img \
+  --vcpus 4 --memory 4096 --disk 40 \
+  --ssh-key ~/.ssh/id_ed25519.pub \
+  --start
+
+# Create from local image with TAP networking
+vmctl create --name myvm --image ./ubuntu.qcow2 --bridge br0
+</code></pre>
+<h2 id="see-also"><a class="header" href="#see-also">See Also</a></h2>
+<p><a href="cli/./start.html">vmctl start</a>, <a href="cli/./up.html">vmctl up</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-start"><a class="header" href="#vmctl-start">vmctl start</a></h1>
+<p>Start an existing VM.</p>
+<h2 id="synopsis-2"><a class="header" href="#synopsis-2">Synopsis</a></h2>
+<pre><code>vmctl start &lt;NAME&gt;
+</code></pre>
+<h2 id="arguments"><a class="header" href="#arguments">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-1"><a class="header" href="#details-1">Details</a></h2>
+<p>Starts a VM that is in the <code>Prepared</code> or <code>Stopped</code> state. The VM must have been previously created with <code>vmctl create</code> or <code>vmctl up</code>.</p>
+<h2 id="examples-1"><a class="header" href="#examples-1">Examples</a></h2>
+<pre><code class="language-bash">vmctl start myvm
+</code></pre>
+<h2 id="see-also-1"><a class="header" href="#see-also-1">See Also</a></h2>
+<p><a href="cli/./stop.html">vmctl stop</a>, <a href="cli/./create.html">vmctl create</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-stop"><a class="header" href="#vmctl-stop">vmctl stop</a></h1>
+<p>Stop a running VM.</p>
+<h2 id="synopsis-3"><a class="header" href="#synopsis-3">Synopsis</a></h2>
+<pre><code>vmctl stop [OPTIONS] &lt;NAME&gt;
+</code></pre>
+<h2 id="arguments-1"><a class="header" href="#arguments-1">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="options-1"><a class="header" href="#options-1">Options</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>--timeout</code></td><td>integer</td><td><code>30</code></td><td>Graceful shutdown timeout in seconds</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-2"><a class="header" href="#details-2">Details</a></h2>
+<p>Sends an ACPI power-down signal via QMP. If the guest doesn't shut down within the timeout, vmctl sends SIGTERM to the QEMU process, then SIGKILL as a last resort.</p>
+<h2 id="examples-2"><a class="header" href="#examples-2">Examples</a></h2>
+<pre><code class="language-bash"># Stop with default 30-second timeout
+vmctl stop myvm
+
+# Give it more time to shut down gracefully
+vmctl stop myvm --timeout 120
+</code></pre>
+<h2 id="see-also-2"><a class="header" href="#see-also-2">See Also</a></h2>
+<p><a href="cli/./start.html">vmctl start</a>, <a href="cli/./destroy.html">vmctl destroy</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-destroy"><a class="header" href="#vmctl-destroy">vmctl destroy</a></h1>
+<p>Destroy a VM and clean up all associated resources.</p>
+<h2 id="synopsis-4"><a class="header" href="#synopsis-4">Synopsis</a></h2>
+<pre><code>vmctl destroy &lt;NAME&gt;
+</code></pre>
+<h2 id="arguments-2"><a class="header" href="#arguments-2">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-3"><a class="header" href="#details-3">Details</a></h2>
+<p>Stops the VM if it's running, then removes all associated files: QCOW2 overlay, cloud-init ISO, log files, SSH keys, sockets, and the work directory. Unregisters the VM from the store.</p>
+<p>This action is irreversible.</p>
+<h2 id="examples-3"><a class="header" href="#examples-3">Examples</a></h2>
+<pre><code class="language-bash">vmctl destroy myvm
+</code></pre>
+<h2 id="see-also-3"><a class="header" href="#see-also-3">See Also</a></h2>
+<p><a href="cli/./down.html">vmctl down</a> (declarative equivalent)</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-list"><a class="header" href="#vmctl-list">vmctl list</a></h1>
+<p>List all registered VMs.</p>
+<h2 id="synopsis-5"><a class="header" href="#synopsis-5">Synopsis</a></h2>
+<pre><code>vmctl list
+</code></pre>
+<h2 id="output"><a class="header" href="#output">Output</a></h2>
+<pre><code class="language-text">NAME             BACKEND  VCPUS   MEM NETWORK     PID      SSH
+webserver        qemu     2       2048 user       12345    10042
+database         qemu     4       4096 tap        12346    -
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>Column</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name</td></tr>
+<tr><td><code>BACKEND</code></td><td>Hypervisor backend (qemu, propolis, noop)</td></tr>
+<tr><td><code>VCPUS</code></td><td>Number of virtual CPUs</td></tr>
+<tr><td><code>MEM</code></td><td>Memory in MB</td></tr>
+<tr><td><code>NETWORK</code></td><td>Networking mode (user, tap, vnic, none)</td></tr>
+<tr><td><code>PID</code></td><td>QEMU process PID (or <code>-</code> if not running)</td></tr>
+<tr><td><code>SSH</code></td><td>SSH host port (or <code>-</code> if not available)</td></tr>
+</tbody></table>
+</div>
+<h2 id="examples-4"><a class="header" href="#examples-4">Examples</a></h2>
+<pre><code class="language-bash">vmctl list
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-status"><a class="header" href="#vmctl-status">vmctl status</a></h1>
+<p>Show detailed status of a VM.</p>
+<h2 id="synopsis-6"><a class="header" href="#synopsis-6">Synopsis</a></h2>
+<pre><code>vmctl status &lt;NAME&gt;
+</code></pre>
+<h2 id="arguments-3"><a class="header" href="#arguments-3">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="output-1"><a class="header" href="#output-1">Output</a></h2>
+<p>Displays all known information about the VM:</p>
+<ul>
+<li>Name, ID, Backend, State</li>
+<li>vCPUs, Memory, Disk</li>
+<li>Network configuration (mode, bridge name)</li>
+<li>Work directory path</li>
+<li>Overlay path, Seed ISO path</li>
+<li>PID, VNC address</li>
+<li>SSH port, MAC address</li>
+</ul>
+<h2 id="examples-5"><a class="header" href="#examples-5">Examples</a></h2>
+<pre><code class="language-bash">vmctl status myvm
+</code></pre>
+<h2 id="see-also-4"><a class="header" href="#see-also-4">See Also</a></h2>
+<p><a href="cli/./list.html">vmctl list</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-console"><a class="header" href="#vmctl-console">vmctl console</a></h1>
+<p>Attach to a VM's serial console.</p>
+<h2 id="synopsis-7"><a class="header" href="#synopsis-7">Synopsis</a></h2>
+<pre><code>vmctl console &lt;NAME&gt;
+</code></pre>
+<h2 id="arguments-4"><a class="header" href="#arguments-4">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-4"><a class="header" href="#details-4">Details</a></h2>
+<p>Connects to the VM's serial console via a Unix socket (QEMU) or WebSocket (Propolis). You'll see the same output as a physical serial port: boot messages, kernel output, and a login prompt.</p>
+<p>Press <strong>Ctrl+]</strong> (0x1d) to detach from the console.</p>
+<h2 id="examples-6"><a class="header" href="#examples-6">Examples</a></h2>
+<pre><code class="language-bash">vmctl console myvm
+</code></pre>
+<h2 id="see-also-5"><a class="header" href="#see-also-5">See Also</a></h2>
+<p><a href="cli/./ssh.html">vmctl ssh</a>, <a href="cli/./log.html">vmctl log</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-ssh"><a class="header" href="#vmctl-ssh">vmctl ssh</a></h1>
+<p>SSH into a VM.</p>
+<h2 id="synopsis-8"><a class="header" href="#synopsis-8">Synopsis</a></h2>
+<pre><code>vmctl ssh [OPTIONS] [NAME]
+</code></pre>
+<h2 id="arguments-5"><a class="header" href="#arguments-5">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (optional; inferred from VMFile.kdl if only one VM is defined)</td></tr>
+</tbody></table>
+</div>
+<h2 id="options-2"><a class="header" href="#options-2">Options</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>--user</code></td><td>string</td><td>SSH username (overrides VMFile)</td></tr>
+<tr><td><code>--key</code></td><td>path</td><td>Path to SSH private key</td></tr>
+<tr><td><code>--file</code></td><td>path</td><td>Path to VMFile.kdl (for reading ssh user)</td></tr>
+</tbody></table>
+</div>
+<h2 id="key-resolution"><a class="header" href="#key-resolution">Key Resolution</a></h2>
+<p>vmctl searches for a private key in this order:</p>
+<ol>
+<li>Auto-generated key in VM's work directory (<code>id_ed25519_generated</code>)</li>
+<li>Key specified with <code>--key</code></li>
+<li><code>~/.ssh/id_ed25519</code></li>
+<li><code>~/.ssh/id_ecdsa</code></li>
+<li><code>~/.ssh/id_rsa</code></li>
+</ol>
+<h2 id="user-resolution"><a class="header" href="#user-resolution">User Resolution</a></h2>
+<ol>
+<li><code>--user</code> CLI flag</li>
+<li><code>user</code> field in VMFile's <code>ssh</code> block</li>
+<li>Default: <code>"vm"</code></li>
+</ol>
+<h2 id="details-5"><a class="header" href="#details-5">Details</a></h2>
+<p>vmctl first verifies SSH connectivity using libssh2 (with a 30-second retry timeout), then hands off to the system <code>ssh</code> binary for full interactive terminal support. SSH options <code>StrictHostKeyChecking=no</code> and <code>UserKnownHostsFile=/dev/null</code> are set automatically.</p>
+<p>For user-mode networking, vmctl connects to <code>127.0.0.1</code> on the forwarded host port. For TAP networking, it discovers the guest IP via ARP.</p>
+<h2 id="examples-7"><a class="header" href="#examples-7">Examples</a></h2>
+<pre><code class="language-bash"># SSH into the only VM in VMFile.kdl
+vmctl ssh
+
+# SSH into a specific VM
+vmctl ssh myvm
+
+# Override user and key
+vmctl ssh myvm --user root --key ~/.ssh/special_key
+</code></pre>
+<h2 id="see-also-6"><a class="header" href="#see-also-6">See Also</a></h2>
+<p><a href="cli/./console.html">vmctl console</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-suspend"><a class="header" href="#vmctl-suspend">vmctl suspend</a></h1>
+<p>Suspend (pause) a running VM.</p>
+<h2 id="synopsis-9"><a class="header" href="#synopsis-9">Synopsis</a></h2>
+<pre><code>vmctl suspend &lt;NAME&gt;
+</code></pre>
+<h2 id="arguments-6"><a class="header" href="#arguments-6">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-6"><a class="header" href="#details-6">Details</a></h2>
+<p>Pauses the VM's vCPUs via QMP. The VM remains in memory but stops executing. Use <code>vmctl resume</code> to continue.</p>
+<h2 id="examples-8"><a class="header" href="#examples-8">Examples</a></h2>
+<pre><code class="language-bash">vmctl suspend myvm
+</code></pre>
+<h2 id="see-also-7"><a class="header" href="#see-also-7">See Also</a></h2>
+<p><a href="cli/./resume.html">vmctl resume</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-resume"><a class="header" href="#vmctl-resume">vmctl resume</a></h1>
+<p>Resume a suspended VM.</p>
+<h2 id="synopsis-10"><a class="header" href="#synopsis-10">Synopsis</a></h2>
+<pre><code>vmctl resume &lt;NAME&gt;
+</code></pre>
+<h2 id="arguments-7"><a class="header" href="#arguments-7">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-7"><a class="header" href="#details-7">Details</a></h2>
+<p>Resumes a VM that was paused with <code>vmctl suspend</code>. The VM continues from exactly where it left off.</p>
+<h2 id="examples-9"><a class="header" href="#examples-9">Examples</a></h2>
+<pre><code class="language-bash">vmctl resume myvm
+</code></pre>
+<h2 id="see-also-8"><a class="header" href="#see-also-8">See Also</a></h2>
+<p><a href="cli/./suspend.html">vmctl suspend</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-image"><a class="header" href="#vmctl-image">vmctl image</a></h1>
+<p>Manage VM disk images.</p>
+<h2 id="synopsis-11"><a class="header" href="#synopsis-11">Synopsis</a></h2>
+<pre><code>vmctl image &lt;SUBCOMMAND&gt;
+</code></pre>
+<h2 id="subcommands"><a class="header" href="#subcommands">Subcommands</a></h2>
+<h3 id="vmctl-image-pull"><a class="header" href="#vmctl-image-pull">vmctl image pull</a></h3>
+<p>Download an image to the local cache.</p>
+<pre><code>vmctl image pull [OPTIONS] &lt;URL&gt;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>Argument/Option</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>URL</code></td><td>string</td><td>URL to download (positional)</td></tr>
+<tr><td><code>--name</code></td><td>string</td><td>Name to save as in the cache</td></tr>
+</tbody></table>
+</div>
+<h3 id="vmctl-image-list"><a class="header" href="#vmctl-image-list">vmctl image list</a></h3>
+<p>List cached images.</p>
+<pre><code>vmctl image list
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-text">NAME                                     SIZE         PATH
+noble-server-cloudimg-amd64.img          0.62 GB      /home/user/.local/share/vmctl/images/noble-server-cloudimg-amd64.img
+</code></pre>
+<h3 id="vmctl-image-inspect"><a class="header" href="#vmctl-image-inspect">vmctl image inspect</a></h3>
+<p>Show image format and details.</p>
+<pre><code>vmctl image inspect &lt;PATH&gt;
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>PATH</code></td><td>Path to image file (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="examples-10"><a class="header" href="#examples-10">Examples</a></h2>
+<pre><code class="language-bash"># Download and cache an image
+vmctl image pull https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+
+# List what's cached
+vmctl image list
+
+# Check format of a local image
+vmctl image inspect ./my-image.qcow2
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-up"><a class="header" href="#vmctl-up">vmctl up</a></h1>
+<p>Bring up VMs defined in VMFile.kdl.</p>
+<h2 id="synopsis-12"><a class="header" href="#synopsis-12">Synopsis</a></h2>
+<pre><code>vmctl up [OPTIONS]
+</code></pre>
+<h2 id="options-3"><a class="header" href="#options-3">Options</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>--file</code></td><td>path</td><td></td><td>Path to VMFile.kdl (auto-discovered if omitted)</td></tr>
+<tr><td><code>--name</code></td><td>string</td><td></td><td>Only bring up a specific VM</td></tr>
+<tr><td><code>--no-provision</code></td><td>flag</td><td><code>false</code></td><td>Skip provisioning steps</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-8"><a class="header" href="#details-8">Details</a></h2>
+<p>For each VM in the VMFile:</p>
+<ol>
+<li>If the VM is <strong>already running</strong>, it is skipped.</li>
+<li>If the VM exists but is <strong>stopped</strong>, it is restarted and re-provisioned.</li>
+<li>If the VM <strong>doesn't exist</strong>, it is created, started, and provisioned.</li>
+</ol>
+<p>Images are downloaded and cached as needed. SSH keys are auto-generated when cloud-init is configured without an explicit key.</p>
+<h2 id="examples-11"><a class="header" href="#examples-11">Examples</a></h2>
+<pre><code class="language-bash"># Bring up all VMs in ./VMFile.kdl
+vmctl up
+
+# Bring up a specific VM
+vmctl up --name webserver
+
+# Bring up without provisioning
+vmctl up --no-provision
+
+# Use a specific VMFile
+vmctl up --file path/to/VMFile.kdl
+</code></pre>
+<h2 id="see-also-9"><a class="header" href="#see-also-9">See Also</a></h2>
+<p><a href="cli/./down.html">vmctl down</a>, <a href="cli/./reload.html">vmctl reload</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-down"><a class="header" href="#vmctl-down">vmctl down</a></h1>
+<p>Bring down VMs defined in VMFile.kdl.</p>
+<h2 id="synopsis-13"><a class="header" href="#synopsis-13">Synopsis</a></h2>
+<pre><code>vmctl down [OPTIONS]
+</code></pre>
+<h2 id="options-4"><a class="header" href="#options-4">Options</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>--file</code></td><td>path</td><td></td><td>Path to VMFile.kdl (auto-discovered if omitted)</td></tr>
+<tr><td><code>--name</code></td><td>string</td><td></td><td>Only bring down a specific VM</td></tr>
+<tr><td><code>--destroy</code></td><td>flag</td><td><code>false</code></td><td>Destroy VMs instead of just stopping</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-9"><a class="header" href="#details-9">Details</a></h2>
+<p>Without <code>--destroy</code>, VMs are stopped gracefully (30-second timeout). They can be restarted with <code>vmctl up</code> or <code>vmctl start</code>.</p>
+<p>With <code>--destroy</code>, VMs are fully destroyed: all files removed, unregistered from the store. This is irreversible.</p>
+<h2 id="examples-12"><a class="header" href="#examples-12">Examples</a></h2>
+<pre><code class="language-bash"># Stop all VMs in VMFile.kdl
+vmctl down
+
+# Stop a specific VM
+vmctl down --name webserver
+
+# Destroy all VMs
+vmctl down --destroy
+</code></pre>
+<h2 id="see-also-10"><a class="header" href="#see-also-10">See Also</a></h2>
+<p><a href="cli/./up.html">vmctl up</a>, <a href="cli/./destroy.html">vmctl destroy</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-reload"><a class="header" href="#vmctl-reload">vmctl reload</a></h1>
+<p>Destroy and recreate VMs from VMFile.kdl.</p>
+<h2 id="synopsis-14"><a class="header" href="#synopsis-14">Synopsis</a></h2>
+<pre><code>vmctl reload [OPTIONS]
+</code></pre>
+<h2 id="options-5"><a class="header" href="#options-5">Options</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>--file</code></td><td>path</td><td></td><td>Path to VMFile.kdl (auto-discovered if omitted)</td></tr>
+<tr><td><code>--name</code></td><td>string</td><td></td><td>Only reload a specific VM</td></tr>
+<tr><td><code>--no-provision</code></td><td>flag</td><td><code>false</code></td><td>Skip provisioning after reload</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-10"><a class="header" href="#details-10">Details</a></h2>
+<p>For each VM: destroys the existing instance (if any), then creates, starts, and provisions a fresh VM from the current VMFile definition. Useful when you've changed the VMFile and want a clean slate.</p>
+<h2 id="examples-13"><a class="header" href="#examples-13">Examples</a></h2>
+<pre><code class="language-bash"># Reload all VMs
+vmctl reload
+
+# Reload a specific VM
+vmctl reload --name webserver
+
+# Reload without provisioning
+vmctl reload --no-provision
+</code></pre>
+<h2 id="see-also-11"><a class="header" href="#see-also-11">See Also</a></h2>
+<p><a href="cli/./up.html">vmctl up</a>, <a href="cli/./down.html">vmctl down</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-provision"><a class="header" href="#vmctl-provision">vmctl provision</a></h1>
+<p>Re-run provisioners on running VMs from VMFile.kdl.</p>
+<h2 id="synopsis-15"><a class="header" href="#synopsis-15">Synopsis</a></h2>
+<pre><code>vmctl provision [OPTIONS]
+</code></pre>
+<h2 id="options-6"><a class="header" href="#options-6">Options</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>--file</code></td><td>path</td><td></td><td>Path to VMFile.kdl (auto-discovered if omitted)</td></tr>
+<tr><td><code>--name</code></td><td>string</td><td></td><td>Only provision a specific VM</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-11"><a class="header" href="#details-11">Details</a></h2>
+<p>Re-runs all provision steps defined in the VMFile on already-running VMs. The VM must be running and have an <code>ssh</code> block in the VMFile.</p>
+<p>vmctl waits up to 120 seconds for SSH to become available, then runs each provisioner in sequence, streaming output to the terminal and logging to <code>provision.log</code>.</p>
+<p>Useful for iterating on provision scripts without recreating the VM.</p>
+<h2 id="examples-14"><a class="header" href="#examples-14">Examples</a></h2>
+<pre><code class="language-bash"># Re-provision all VMs
+vmctl provision
+
+# Re-provision a specific VM
+vmctl provision --name builder
+</code></pre>
+<h2 id="see-also-12"><a class="header" href="#see-also-12">See Also</a></h2>
+<p><a href="cli/./up.html">vmctl up</a>, <a href="cli/./reload.html">vmctl reload</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmctl-log"><a class="header" href="#vmctl-log">vmctl log</a></h1>
+<p>Show VM console and provision logs.</p>
+<h2 id="synopsis-16"><a class="header" href="#synopsis-16">Synopsis</a></h2>
+<pre><code>vmctl log [OPTIONS] &lt;NAME&gt;
+</code></pre>
+<h2 id="arguments-8"><a class="header" href="#arguments-8">Arguments</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Argument</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>NAME</code></td><td>VM name (positional)</td></tr>
+</tbody></table>
+</div>
+<h2 id="options-7"><a class="header" href="#options-7">Options</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>--console</code></td><td>flag</td><td><code>false</code></td><td>Show only console log (boot / cloud-init output)</td></tr>
+<tr><td><code>--provision</code></td><td>flag</td><td><code>false</code></td><td>Show only provision log</td></tr>
+<tr><td><code>--tail</code>, <code>-n</code></td><td>integer</td><td><code>0</code></td><td>Show the last N lines (0 = all)</td></tr>
+</tbody></table>
+</div>
+<h2 id="details-12"><a class="header" href="#details-12">Details</a></h2>
+<p>By default (no flags), both console and provision logs are shown. The console log captures serial output (boot messages, cloud-init output). The provision log captures stdout/stderr from provisioner runs.</p>
+<p>Log files are located in the VM's work directory:</p>
+<ul>
+<li><code>console.log</code> - Serial console output</li>
+<li><code>provision.log</code> - Provisioning output</li>
+</ul>
+<h2 id="examples-15"><a class="header" href="#examples-15">Examples</a></h2>
+<pre><code class="language-bash"># Show all logs
+vmctl log myvm
+
+# Show only provision output
+vmctl log myvm --provision
+
+# Show last 50 lines of console log
+vmctl log myvm --console --tail 50
+</code></pre>
+<h2 id="see-also-13"><a class="header" href="#see-also-13">See Also</a></h2>
+<p><a href="cli/./console.html">vmctl console</a>, <a href="cli/./status.html">vmctl status</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="architecture-overview"><a class="header" href="#architecture-overview">Architecture Overview</a></h1>
+<p>vm-manager is structured as a two-crate Cargo workspace.</p>
+<h2 id="high-level-design"><a class="header" href="#high-level-design">High-Level Design</a></h2>
+<pre><code class="language-text">┌─────────────────────────────────────────┐
+│                vmctl CLI                │
+│         (crates/vmctl)                  │
+│                                         │
+│  Commands → VMFile parser → Hypervisor  │
+└──────────────────┬──────────────────────┘
+                   │
+┌──────────────────┴──────────────────────┐
+│            vm-manager library           │
+│        (crates/vm-manager)              │
+│                                         │
+│  ┌─────────────┐  ┌──────────────────┐  │
+│  │  Hypervisor  │  │  Image Manager   │  │
+│  │    Trait     │  │                  │  │
+│  └──────┬──────┘  └──────────────────┘  │
+│         │                               │
+│  ┌──────┴──────────────────────┐        │
+│  │     RouterHypervisor        │        │
+│  │  ┌──────┐ ┌────────┐ ┌────┐│        │
+│  │  │ QEMU │ │Propolis│ │Noop││        │
+│  │  └──────┘ └────────┘ └────┘│        │
+│  └─────────────────────────────┘        │
+│                                         │
+│  ┌───────────┐  ┌──────────────────┐    │
+│  │    SSH     │  │   Cloud-Init     │    │
+│  │  Module    │  │   Generator      │    │
+│  └───────────┘  └──────────────────┘    │
+│                                         │
+│  ┌───────────┐  ┌──────────────────┐    │
+│  │ Provision  │  │    VMFile        │    │
+│  │  Runner    │  │    Parser        │    │
+│  └───────────┘  └──────────────────┘    │
+└─────────────────────────────────────────┘
+</code></pre>
+<h2 id="async-runtime"><a class="header" href="#async-runtime">Async Runtime</a></h2>
+<p>vmctl uses Tokio with the multi-threaded runtime. Most operations are async, with one exception: SSH operations use <code>ssh2</code> (libssh2 bindings), which is blocking. These are wrapped in <code>tokio::task::spawn_blocking</code> to avoid blocking the async executor.</p>
+<h2 id="platform-abstraction"><a class="header" href="#platform-abstraction">Platform Abstraction</a></h2>
+<p>The <code>Hypervisor</code> trait defines a platform-agnostic interface. The <code>RouterHypervisor</code> dispatches calls to the correct backend based on the <code>BackendTag</code> stored in each <code>VmHandle</code>:</p>
+<ul>
+<li><strong>Linux</strong> builds include <code>QemuBackend</code>.</li>
+<li><strong>illumos</strong> builds include <code>PropolisBackend</code>.</li>
+<li><strong>All platforms</strong> include <code>NoopBackend</code> for testing.</li>
+</ul>
+<p>Conditional compilation (<code>#[cfg(target_os = ...)]</code>) ensures only the relevant backend is compiled.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="crate-structure"><a class="header" href="#crate-structure">Crate Structure</a></h1>
+<h2 id="workspace-layout"><a class="header" href="#workspace-layout">Workspace Layout</a></h2>
+<pre><code class="language-text">vm-manager/
+  Cargo.toml              # Workspace root
+  crates/
+    vm-manager/            # Library crate
+      Cargo.toml
+      src/
+        lib.rs             # Re-exports
+        traits.rs          # Hypervisor trait, ConsoleEndpoint
+        types.rs           # VmSpec, VmHandle, VmState, NetworkConfig, etc.
+        error.rs           # VmError with miette diagnostics
+        vmfile.rs          # VMFile.kdl parser and resolver
+        image.rs           # ImageManager (download, cache, overlay)
+        ssh.rs             # SSH connect, exec, streaming, upload
+        provision.rs       # Provisioner runner
+        cloudinit.rs       # NoCloud seed ISO generation
+        backends/
+          mod.rs           # RouterHypervisor
+          qemu.rs          # QEMU/KVM backend (Linux)
+          qmp.rs           # QMP client
+          propolis.rs       # Propolis/bhyve backend (illumos)
+          noop.rs          # No-op backend (testing)
+    vmctl/                 # CLI binary crate
+      Cargo.toml
+      src/
+        main.rs            # CLI entry point, clap App
+        commands/
+          create.rs        # vmctl create
+          start.rs         # vmctl start, suspend, resume
+          stop.rs          # vmctl stop
+          destroy.rs       # vmctl destroy
+          list.rs          # vmctl list
+          status.rs        # vmctl status
+          console.rs       # vmctl console
+          ssh.rs           # vmctl ssh
+          image.rs         # vmctl image (pull, list, inspect)
+          up.rs            # vmctl up
+          down.rs          # vmctl down
+          reload.rs        # vmctl reload
+          provision_cmd.rs # vmctl provision
+          log.rs           # vmctl log
+</code></pre>
+<h2 id="vm-manager-crate"><a class="header" href="#vm-manager-crate">vm-manager Crate</a></h2>
+<p>The library crate. Contains all business logic and can be used as a dependency by other Rust projects.</p>
+<p><strong>Public re-exports from <code>lib.rs</code>:</strong></p>
+<ul>
+<li><code>RouterHypervisor</code> (from <code>backends</code>)</li>
+<li><code>Hypervisor</code>, <code>ConsoleEndpoint</code> (from <code>traits</code>)</li>
+<li><code>VmError</code>, <code>Result</code> (from <code>error</code>)</li>
+<li>All types from <code>types</code>: <code>BackendTag</code>, <code>VmSpec</code>, <code>VmHandle</code>, <code>VmState</code>, <code>NetworkConfig</code>, <code>CloudInitConfig</code>, <code>SshConfig</code></li>
+</ul>
+<h2 id="vmctl-crate"><a class="header" href="#vmctl-crate">vmctl Crate</a></h2>
+<p>The CLI binary. Depends on <code>vm-manager</code> and adds:</p>
+<ul>
+<li>Clap-based argument parsing</li>
+<li>Store persistence (<code>vms.json</code>)</li>
+<li>Terminal I/O (console bridging, log display)</li>
+<li>VMFile discovery and command dispatch</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hypervisor-backends"><a class="header" href="#hypervisor-backends">Hypervisor Backends</a></h1>
+<h2 id="the-hypervisor-trait"><a class="header" href="#the-hypervisor-trait">The Hypervisor Trait</a></h2>
+<p>All backends implement the <code>Hypervisor</code> trait defined in <code>crates/vm-manager/src/traits.rs</code>:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Hypervisor: Send + Sync {
+    fn prepare(&amp;self, spec: &amp;VmSpec) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn start(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn stop(&amp;self, vm: &amp;VmHandle, timeout: Duration) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn suspend(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn resume(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn destroy(&amp;self, vm: VmHandle) -&gt; impl Future&lt;Output = Result&lt;()&gt;&gt;;
+    fn state(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;VmState&gt;&gt;;
+    fn guest_ip(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;String&gt;&gt;;
+    fn console_endpoint(&amp;self, vm: &amp;VmHandle) -&gt; Result&lt;ConsoleEndpoint&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="qemu-backend-linux"><a class="header" href="#qemu-backend-linux">QEMU Backend (Linux)</a></h2>
+<p>Located in <code>crates/vm-manager/src/backends/qemu.rs</code>.</p>
+<p><strong>Prepare:</strong></p>
+<ul>
+<li>Creates work directory under <code>~/.local/share/vmctl/vms/&lt;name&gt;/</code>.</li>
+<li>Creates QCOW2 overlay on top of the base image.</li>
+<li>Generates cloud-init seed ISO (if configured).</li>
+<li>Allocates a deterministic SSH port (10022-10122 range, hash-based).</li>
+<li>Generates a locally-administered MAC address.</li>
+</ul>
+<p><strong>Start:</strong></p>
+<ul>
+<li>Launches <code>qemu-system-x86_64</code> with KVM acceleration.</li>
+<li>CPU type: <code>host</code> (passthrough).</li>
+<li>Machine type: <code>q35,accel=kvm</code>.</li>
+<li>Devices: virtio-blk for disk, virtio-rng for entropy.</li>
+<li>Console: Unix socket + log file.</li>
+<li>VNC: localhost, auto-port.</li>
+<li>Networking: User-mode (SLIRP with port forwarding) or TAP (bridged).</li>
+<li>Daemonizes with PID file.</li>
+<li>Connects via QMP to verify startup and retrieve VNC address.</li>
+</ul>
+<p><strong>Stop:</strong></p>
+<ol>
+<li>ACPI power-down via QMP (<code>system_powerdown</code>).</li>
+<li>Poll for process exit (500ms intervals) up to timeout.</li>
+<li>SIGTERM if timeout exceeded.</li>
+<li>SIGKILL as last resort.</li>
+</ol>
+<p><strong>IP Discovery:</strong></p>
+<ul>
+<li>User-mode: returns <code>127.0.0.1</code> (SSH via forwarded port).</li>
+<li>TAP: parses ARP table (<code>ip neigh show</code>), falls back to dnsmasq lease files by MAC address.</li>
+</ul>
+<h2 id="qmp-client"><a class="header" href="#qmp-client">QMP Client</a></h2>
+<p>Located in <code>crates/vm-manager/src/backends/qmp.rs</code>. Async JSON-over-Unix-socket client implementing the QEMU Machine Protocol.</p>
+<p>Commands: <code>system_powerdown</code>, <code>quit</code>, <code>stop</code>, <code>cont</code>, <code>query_status</code>, <code>query_vnc</code>.</p>
+<h2 id="propolis-backend-illumos"><a class="header" href="#propolis-backend-illumos">Propolis Backend (illumos)</a></h2>
+<p>Located in <code>crates/vm-manager/src/backends/propolis.rs</code>.</p>
+<ul>
+<li>Uses ZFS clones for VM disks.</li>
+<li>Manages zones with the <code>nebula-vm</code> brand.</li>
+<li>Communicates with <code>propolis-server</code> via REST API.</li>
+<li>Networking via illumos VNICs.</li>
+<li>Suspend/resume not yet implemented.</li>
+</ul>
+<h2 id="noop-backend"><a class="header" href="#noop-backend">Noop Backend</a></h2>
+<p>Located in <code>crates/vm-manager/src/backends/noop.rs</code>. All operations succeed immediately. Used for testing.</p>
+<h2 id="routerhypervisor-1"><a class="header" href="#routerhypervisor-1">RouterHypervisor</a></h2>
+<p>Located in <code>crates/vm-manager/src/backends/mod.rs</code>. Dispatches <code>Hypervisor</code> trait calls to the correct backend based on the <code>VmHandle</code>'s <code>BackendTag</code>.</p>
+<p>Construction:</p>
+<ul>
+<li><code>RouterHypervisor::new(bridge, zfs_pool)</code> - Platform-aware, creates the appropriate backend.</li>
+<li><code>RouterHypervisor::noop_only()</code> - Testing mode.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="state-management"><a class="header" href="#state-management">State Management</a></h1>
+<h2 id="vm-store"><a class="header" href="#vm-store">VM Store</a></h2>
+<p>vmctl persists VM state in a JSON file at <code>$XDG_DATA_HOME/vmctl/vms.json</code> (typically <code>~/.local/share/vmctl/vms.json</code>). Falls back to <code>/tmp</code> if <code>XDG_DATA_HOME</code> is not set.</p>
+<p>The store is a simple mapping from VM name to <code>VmHandle</code>.</p>
+<h2 id="vmhandle-serialization"><a class="header" href="#vmhandle-serialization">VmHandle Serialization</a></h2>
+<p><code>VmHandle</code> is serialized to JSON with all fields. Fields added in later versions have <code>#[serde(default)]</code> annotations, so older JSON files are deserialized without errors (missing fields get defaults).</p>
+<p>Example stored handle:</p>
+<pre><code class="language-json">{
+  "id": "abc123",
+  "name": "myvm",
+  "backend": "qemu",
+  "work_dir": "/home/user/.local/share/vmctl/vms/myvm",
+  "overlay_path": "/home/user/.local/share/vmctl/vms/myvm/overlay.qcow2",
+  "seed_iso_path": "/home/user/.local/share/vmctl/vms/myvm/seed.iso",
+  "pid": 12345,
+  "qmp_socket": "/home/user/.local/share/vmctl/vms/myvm/qmp.sock",
+  "console_socket": "/home/user/.local/share/vmctl/vms/myvm/console.sock",
+  "vnc_addr": "127.0.0.1:5900",
+  "vcpus": 2,
+  "memory_mb": 2048,
+  "disk_gb": 20,
+  "network": {"type": "User"},
+  "ssh_host_port": 10042,
+  "mac_addr": "52:54:00:ab:cd:ef"
+}
+</code></pre>
+<h2 id="write-safety"><a class="header" href="#write-safety">Write Safety</a></h2>
+<p>The store uses an atomic write pattern:</p>
+<ol>
+<li>Write to a <code>.tmp</code> file.</li>
+<li>Rename (atomic on most filesystems) to the final path.</li>
+</ol>
+<p>This prevents corruption if the process is interrupted during a write.</p>
+<h2 id="state-vs-process-state"><a class="header" href="#state-vs-process-state">State vs Process State</a></h2>
+<p>The store records the <em>last known</em> state but doesn't actively monitor QEMU processes. When vmctl queries a VM's state, it:</p>
+<ol>
+<li>Checks if the PID file exists.</li>
+<li>Sends <code>kill(pid, 0)</code> to verify the process is alive.</li>
+<li>If alive, queries QMP for detailed status (<code>running</code>, <code>paused</code>, etc.).</li>
+<li>If dead, reports <code>Stopped</code>.</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ssh-subsystem"><a class="header" href="#ssh-subsystem">SSH Subsystem</a></h1>
+<h2 id="library"><a class="header" href="#library">Library</a></h2>
+<p>vmctl uses the <code>ssh2</code> crate (Rust bindings to libssh2) for SSH operations. The SSH module is at <code>crates/vm-manager/src/ssh.rs</code>.</p>
+<h2 id="core-functions"><a class="header" href="#core-functions">Core Functions</a></h2>
+<h3 id="connect-1"><a class="header" href="#connect-1">connect</a></h3>
+<p>Establishes a TCP connection and authenticates via public key.</p>
+<p>Supports two authentication modes:</p>
+<ul>
+<li><strong>In-memory PEM</strong>: Private key stored as a string (used for auto-generated keys).</li>
+<li><strong>File path</strong>: Reads key from disk.</li>
+</ul>
+<h3 id="exec"><a class="header" href="#exec">exec</a></h3>
+<p>Executes a command and collects the full stdout/stderr output. Blocking.</p>
+<h3 id="exec_streaming"><a class="header" href="#exec_streaming">exec_streaming</a></h3>
+<p>Executes a command and streams stdout/stderr in real-time to provided writers. Uses non-blocking I/O:</p>
+<ol>
+<li>Opens a channel and calls <code>exec()</code>.</li>
+<li>Switches the session to non-blocking mode.</li>
+<li>Polls stdout and stderr in a loop with 8KB buffers.</li>
+<li>Flushes output after each read.</li>
+<li>Sleeps 50ms when no data is available.</li>
+<li>Switches back to blocking mode to read the exit status.</li>
+</ol>
+<p>This is used by the provisioner to show build output live.</p>
+<h3 id="upload"><a class="header" href="#upload">upload</a></h3>
+<p>Transfers a file to the guest via SFTP. Creates the SFTP subsystem, opens a remote file, and writes the local file contents.</p>
+<h3 id="connect_with_retry"><a class="header" href="#connect_with_retry">connect_with_retry</a></h3>
+<p>Attempts to connect repeatedly until a timeout (typically 120 seconds for provisioning, 30 seconds for <code>vmctl ssh</code>). Uses exponential backoff starting at 1 second, capped at 5 seconds. Runs the blocking connect on <code>tokio::task::spawn_blocking</code>.</p>
+<h2 id="why-not-native-ssh"><a class="header" href="#why-not-native-ssh">Why Not Native SSH?</a></h2>
+<p>libssh2 is used for programmatic operations (provisioning, connectivity checks) because it can be controlled from Rust code. For interactive sessions (<code>vmctl ssh</code>), vmctl hands off to the system <code>ssh</code> binary for proper terminal handling (PTY allocation, signal forwarding, etc.).</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h1>
+<h2 id="approach"><a class="header" href="#approach">Approach</a></h2>
+<p>vm-manager uses <a href="https://docs.rs/miette">miette</a> for rich diagnostic error reporting. Every error variant includes:</p>
+<ul>
+<li>A human-readable message.</li>
+<li>A diagnostic code (e.g., <code>vm_manager::qemu::spawn_failed</code>).</li>
+<li>A <code>help</code> message telling the user what to do.</li>
+</ul>
+<p>Errors are defined with <code>#[derive(thiserror::Error, miette::Diagnostic)]</code>.</p>
+<h2 id="error-variants"><a class="header" href="#error-variants">Error Variants</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Code</th><th>Trigger</th><th>Help</th></tr></thead><tbody>
+<tr><td><code>vm_manager::qemu::spawn_failed</code></td><td>QEMU process failed to start</td><td>Ensure <code>qemu-system-x86_64</code> is installed, in PATH, and KVM is available (<code>/dev/kvm</code>)</td></tr>
+<tr><td><code>vm_manager::qemu::qmp_connect_failed</code></td><td>Can't connect to QMP socket</td><td>QEMU may have crashed before QMP socket ready; check work directory logs</td></tr>
+<tr><td><code>vm_manager::qemu::qmp_command_failed</code></td><td>QMP command returned an error</td><td>(varies)</td></tr>
+<tr><td><code>vm_manager::image::overlay_creation_failed</code></td><td>QCOW2 overlay creation failed</td><td>Ensure <code>qemu-img</code> is installed and base image exists and is readable</td></tr>
+<tr><td><code>vm_manager::network::ip_discovery_timeout</code></td><td>Guest IP not found</td><td>Guest may not have DHCP lease; check network config and cloud-init</td></tr>
+<tr><td><code>vm_manager::propolis::unreachable</code></td><td>Can't reach propolis-server</td><td>Ensure propolis-server is running and listening on expected address</td></tr>
+<tr><td><code>vm_manager::cloudinit::iso_failed</code></td><td>Seed ISO generation failed</td><td>Ensure <code>genisoimage</code> or <code>mkisofs</code> installed, or enable <code>pure-iso</code> feature</td></tr>
+<tr><td><code>vm_manager::ssh::failed</code></td><td>SSH connection or command failed</td><td>Check SSH key, guest reachability, and sshd running</td></tr>
+<tr><td><code>vm_manager::ssh::keygen_failed</code></td><td>Ed25519 key generation failed</td><td>Internal error; please report it</td></tr>
+<tr><td><code>vm_manager::image::download_failed</code></td><td>Image download failed</td><td>Check network connectivity and URL correctness</td></tr>
+<tr><td><code>vm_manager::image::format_detection_failed</code></td><td>Can't detect image format</td><td>Ensure <code>qemu-img</code> installed and file is valid disk image</td></tr>
+<tr><td><code>vm_manager::image::conversion_failed</code></td><td>Image format conversion failed</td><td>Ensure <code>qemu-img</code> installed and sufficient disk space</td></tr>
+<tr><td><code>vm_manager::vm::not_found</code></td><td>VM not in store</td><td>Run <code>vmctl list</code> to see available VMs</td></tr>
+<tr><td><code>vm_manager::vm::invalid_state</code></td><td>Operation invalid for current state</td><td>(varies)</td></tr>
+<tr><td><code>vm_manager::backend::not_available</code></td><td>Backend not supported on platform</td><td>Backend not supported on current platform</td></tr>
+<tr><td><code>vm_manager::vmfile::not_found</code></td><td>VMFile.kdl not found</td><td>Create VMFile.kdl in current directory or specify path with <code>--file</code></td></tr>
+<tr><td><code>vm_manager::vmfile::parse_failed</code></td><td>KDL syntax error</td><td>Check VMFile.kdl syntax; see https://kdl.dev</td></tr>
+<tr><td><code>vm_manager::vmfile::validation</code></td><td>VMFile validation error</td><td>(custom hint per error)</td></tr>
+<tr><td><code>vm_manager::provision::failed</code></td><td>Provisioner step failed</td><td>Check provisioner config and VM SSH reachability</td></tr>
+<tr><td><code>vm_manager::io</code></td><td>General I/O error</td><td>(transparent)</td></tr>
+</tbody></table>
+</div>
+<h2 id="type-alias"><a class="header" href="#type-alias">Type Alias</a></h2>
+<p>The library defines <code>pub type Result&lt;T&gt; = std::result::Result&lt;T, VmError&gt;</code> for convenience. CLI commands return <code>miette::Result&lt;()&gt;</code> for rich terminal output.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="using-vm-manager-as-a-crate"><a class="header" href="#using-vm-manager-as-a-crate">Using vm-manager as a Crate</a></h1>
+<p>The <code>vm-manager</code> library can be used as a Rust dependency for building custom VM management tools.</p>
+<h2 id="add-the-dependency"><a class="header" href="#add-the-dependency">Add the Dependency</a></h2>
+<pre><code class="language-toml">[dependencies]
+vm-manager = { path = "crates/vm-manager" }
+# or from a git repository:
+# vm-manager = { git = "https://github.com/user/vm-manager.git" }
+</code></pre>
+<h2 id="re-exports"><a class="header" href="#re-exports">Re-Exports</a></h2>
+<p>The crate root re-exports the most commonly used types:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use vm_manager::{
+    // Hypervisor abstraction
+    Hypervisor, ConsoleEndpoint, RouterHypervisor,
+    // Error handling
+    VmError, Result,
+    // Core types
+    BackendTag, VmSpec, VmHandle, VmState,
+    NetworkConfig, CloudInitConfig, SshConfig,
+};
+<span class="boring">}</span></code></pre></pre>
+<h2 id="minimal-example"><a class="header" href="#minimal-example">Minimal Example</a></h2>
+<pre><pre class="playground"><code class="language-rust">use vm_manager::{RouterHypervisor, Hypervisor, VmSpec, NetworkConfig};
+use std::time::Duration;
+
+#[tokio::main]
+async fn main() -&gt; vm_manager::Result&lt;()&gt; {
+    // Create a hypervisor (platform-detected)
+    let hyp = RouterHypervisor::new(None, "rpool".into());
+
+    // Define a VM
+    let spec = VmSpec {
+        name: "example".into(),
+        image_path: "/path/to/image.qcow2".into(),
+        vcpus: 2,
+        memory_mb: 2048,
+        disk_gb: Some(20),
+        network: NetworkConfig::User,
+        cloud_init: None,
+        ssh: None,
+    };
+
+    // Lifecycle
+    let handle = hyp.prepare(&amp;spec).await?;
+    let handle = hyp.start(&amp;handle).await?;
+
+    // ... use the VM ...
+
+    hyp.stop(&amp;handle, Duration::from_secs(30)).await?;
+    hyp.destroy(handle).await?;
+
+    Ok(())
+}</code></pre></pre>
+<h2 id="feature-flags-1"><a class="header" href="#feature-flags-1">Feature Flags</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Feature</th><th>Effect</th></tr></thead><tbody>
+<tr><td><code>pure-iso</code></td><td>Use pure-Rust ISO generation instead of <code>genisoimage</code>/<code>mkisofs</code></td></tr>
+</tbody></table>
+</div><div style="break-before: page; page-break-before: always;"></div><h1 id="hypervisor-trait"><a class="header" href="#hypervisor-trait">Hypervisor Trait</a></h1>
+<p>The <code>Hypervisor</code> trait is the core abstraction for VM lifecycle management. All backends implement it.</p>
+<h2 id="definition"><a class="header" href="#definition">Definition</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Hypervisor: Send + Sync {
+    fn prepare(&amp;self, spec: &amp;VmSpec) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn start(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn stop(&amp;self, vm: &amp;VmHandle, timeout: Duration) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn suspend(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn resume(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;VmHandle&gt;&gt;;
+    fn destroy(&amp;self, vm: VmHandle) -&gt; impl Future&lt;Output = Result&lt;()&gt;&gt;;
+    fn state(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;VmState&gt;&gt;;
+    fn guest_ip(&amp;self, vm: &amp;VmHandle) -&gt; impl Future&lt;Output = Result&lt;String&gt;&gt;;
+    fn console_endpoint(&amp;self, vm: &amp;VmHandle) -&gt; Result&lt;ConsoleEndpoint&gt;;
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="methods"><a class="header" href="#methods">Methods</a></h2>
+<h3 id="prepare"><a class="header" href="#prepare">prepare</a></h3>
+<p>Allocates resources for a VM based on the provided <code>VmSpec</code>. Creates the work directory, QCOW2 overlay, cloud-init ISO, and networking configuration. Returns a <code>VmHandle</code> in the <code>Prepared</code> state.</p>
+<h3 id="start"><a class="header" href="#start">start</a></h3>
+<p>Boots the VM. Returns an updated <code>VmHandle</code> with runtime information (PID, VNC address, etc.).</p>
+<h3 id="stop"><a class="header" href="#stop">stop</a></h3>
+<p>Gracefully shuts down the VM. Tries ACPI power-down first, then force-kills after the timeout. Returns the handle in <code>Stopped</code> state.</p>
+<h3 id="suspend--resume"><a class="header" href="#suspend--resume">suspend / resume</a></h3>
+<p>Pauses and unpauses VM vCPUs without shutting down.</p>
+<h3 id="destroy-1"><a class="header" href="#destroy-1">destroy</a></h3>
+<p>Stops the VM (if running) and removes all associated resources. Takes ownership of the handle.</p>
+<h3 id="state"><a class="header" href="#state">state</a></h3>
+<p>Queries the current VM state by checking the process and QMP status.</p>
+<h3 id="guest_ip"><a class="header" href="#guest_ip">guest_ip</a></h3>
+<p>Discovers the guest's IP address. Method varies by network mode and backend.</p>
+<h3 id="console_endpoint"><a class="header" href="#console_endpoint">console_endpoint</a></h3>
+<p>Returns the console connection details. Synchronous (not async).</p>
+<h2 id="consoleendpoint"><a class="header" href="#consoleendpoint">ConsoleEndpoint</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum ConsoleEndpoint {
+    UnixSocket(PathBuf),  // QEMU serial console
+    WebSocket(String),    // Propolis console
+    None,                 // Noop backend
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="implementing-a-custom-backend"><a class="header" href="#implementing-a-custom-backend">Implementing a Custom Backend</a></h2>
+<p>To add a new hypervisor backend:</p>
+<ol>
+<li>Create a struct implementing <code>Hypervisor</code>.</li>
+<li>Add it to <code>RouterHypervisor</code> with appropriate <code>#[cfg]</code> gates.</li>
+<li>Add a new variant to <code>BackendTag</code>.</li>
+<li>Implement dispatch in <code>RouterHypervisor</code>'s <code>Hypervisor</code> impl.</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="core-types"><a class="header" href="#core-types">Core Types</a></h1>
+<p>All types are defined in <code>crates/vm-manager/src/types.rs</code> and re-exported from the crate root.</p>
+<h2 id="vmspec"><a class="header" href="#vmspec">VmSpec</a></h2>
+<p>The input specification for creating a VM.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct VmSpec {
+    pub name: String,
+    pub image_path: PathBuf,
+    pub vcpus: u16,
+    pub memory_mb: u64,
+    pub disk_gb: Option&lt;u32&gt;,
+    pub network: NetworkConfig,
+    pub cloud_init: Option&lt;CloudInitConfig&gt;,
+    pub ssh: Option&lt;SshConfig&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="vmhandle"><a class="header" href="#vmhandle">VmHandle</a></h2>
+<p>A runtime handle to a managed VM. Serializable to JSON for persistence.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct VmHandle {
+    pub id: String,
+    pub name: String,
+    pub backend: BackendTag,
+    pub work_dir: PathBuf,
+    pub overlay_path: Option&lt;PathBuf&gt;,
+    pub seed_iso_path: Option&lt;PathBuf&gt;,
+    pub pid: Option&lt;u32&gt;,
+    pub qmp_socket: Option&lt;PathBuf&gt;,
+    pub console_socket: Option&lt;PathBuf&gt;,
+    pub vnc_addr: Option&lt;String&gt;,
+    pub vcpus: u16,            // default: 1
+    pub memory_mb: u64,        // default: 1024
+    pub disk_gb: Option&lt;u32&gt;,
+    pub network: NetworkConfig,
+    pub ssh_host_port: Option&lt;u16&gt;,
+    pub mac_addr: Option&lt;String&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>All optional fields default to <code>None</code> and numeric fields have sensible defaults for backward-compatible deserialization.</p>
+<h2 id="vmstate"><a class="header" href="#vmstate">VmState</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum VmState {
+    Preparing,
+    Prepared,
+    Running,
+    Stopped,
+    Failed,
+    Destroyed,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Implements <code>Display</code> with lowercase names.</p>
+<h2 id="networkconfig"><a class="header" href="#networkconfig">NetworkConfig</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum NetworkConfig {
+    Tap { bridge: String },
+    User,                    // default
+    Vnic { name: String },
+    None,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Serialized with <code>#[serde(tag = "type")]</code> for clean JSON representation.</p>
+<h2 id="cloudinitconfig"><a class="header" href="#cloudinitconfig">CloudInitConfig</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct CloudInitConfig {
+    pub user_data: Vec&lt;u8&gt;,
+    pub instance_id: Option&lt;String&gt;,
+    pub hostname: Option&lt;String&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<p><code>user_data</code> is the raw cloud-config YAML content.</p>
+<h2 id="sshconfig"><a class="header" href="#sshconfig">SshConfig</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct SshConfig {
+    pub user: String,
+    pub public_key: Option&lt;String&gt;,
+    pub private_key_path: Option&lt;PathBuf&gt;,
+    pub private_key_pem: Option&lt;String&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Supports both file-based keys (<code>private_key_path</code>) and in-memory keys (<code>private_key_pem</code>).</p>
+<h2 id="backendtag"><a class="header" href="#backendtag">BackendTag</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum BackendTag {
+    Noop,
+    Qemu,
+    Propolis,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>Serialized as lowercase strings. Implements <code>Display</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="image-management-api"><a class="header" href="#image-management-api">Image Management API</a></h1>
+<p>The image module handles downloading, caching, format detection, and overlay creation. Located in <code>crates/vm-manager/src/image.rs</code>.</p>
+<h2 id="imagemanager"><a class="header" href="#imagemanager">ImageManager</a></h2>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct ImageManager {
+    client: reqwest::Client,
+    cache: PathBuf,  // default: ~/.local/share/vmctl/images/
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="new"><a class="header" href="#new">new</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>ImageManager::new() -&gt; Self
+<span class="boring">}</span></code></pre></pre>
+<p>Creates an ImageManager with the default cache directory.</p>
+<h3 id="download"><a class="header" href="#download">download</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>async fn download(&amp;self, url: &amp;str, destination: &amp;Path) -&gt; Result&lt;()&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Downloads an image from a URL to a local path. Skips if the destination already exists. Auto-decompresses <code>.zst</code>/<code>.zstd</code> files. Logs progress every 5%.</p>
+<h3 id="pull"><a class="header" href="#pull">pull</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>async fn pull(&amp;self, url: &amp;str, name: Option&lt;&amp;str&gt;) -&gt; Result&lt;PathBuf&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Downloads an image to the cache directory and returns the cached path. If <code>name</code> is None, extracts the filename from the URL.</p>
+<h3 id="list"><a class="header" href="#list">list</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn list(&amp;self) -&gt; Result&lt;Vec&lt;CachedImage&gt;&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Lists all images in the cache with their names, sizes, and paths.</p>
+<h3 id="detect_format"><a class="header" href="#detect_format">detect_format</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>async fn detect_format(path: &amp;Path) -&gt; Result&lt;String&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Runs <code>qemu-img info --output=json</code> and returns the format string (e.g., <code>"qcow2"</code>, <code>"raw"</code>).</p>
+<h3 id="create_overlay"><a class="header" href="#create_overlay">create_overlay</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>async fn create_overlay(base: &amp;Path, overlay: &amp;Path, size_gb: Option&lt;u32&gt;) -&gt; Result&lt;()&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Creates a QCOW2 overlay with the given base image as a backing file. Optionally resizes to <code>size_gb</code>.</p>
+<h3 id="convert"><a class="header" href="#convert">convert</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>async fn convert(src: &amp;Path, dst: &amp;Path, format: &amp;str) -&gt; Result&lt;()&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Converts an image between formats using <code>qemu-img convert</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ssh-and-provisioning-api"><a class="header" href="#ssh-and-provisioning-api">SSH and Provisioning API</a></h1>
+<h2 id="ssh-module"><a class="header" href="#ssh-module">SSH Module</a></h2>
+<p>Located in <code>crates/vm-manager/src/ssh.rs</code>.</p>
+<h3 id="connect-2"><a class="header" href="#connect-2">connect</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn connect(ip: &amp;str, port: u16, config: &amp;SshConfig) -&gt; Result&lt;Session&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Establishes an SSH connection and authenticates. Supports in-memory PEM keys and file-based keys.</p>
+<h3 id="exec-1"><a class="header" href="#exec-1">exec</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn exec(sess: &amp;Session, cmd: &amp;str) -&gt; Result&lt;(String, String, i32)&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Executes a command and returns <code>(stdout, stderr, exit_code)</code>.</p>
+<h3 id="exec_streaming-1"><a class="header" href="#exec_streaming-1">exec_streaming</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn exec_streaming&lt;W1: Write, W2: Write&gt;(
+    sess: &amp;Session,
+    cmd: &amp;str,
+    stdout_writer: &amp;mut W1,
+    stderr_writer: &amp;mut W2,
+) -&gt; Result&lt;(String, String, i32)&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Executes a command with real-time output streaming. Uses non-blocking I/O with 8KB buffers and 50ms polling interval. Both writes to the provided writers and collects the full output.</p>
+<h3 id="upload-1"><a class="header" href="#upload-1">upload</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn upload(sess: &amp;Session, local: &amp;Path, remote: &amp;str) -&gt; Result&lt;()&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Uploads a file via SFTP.</p>
+<h3 id="connect_with_retry-1"><a class="header" href="#connect_with_retry-1">connect_with_retry</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub async fn connect_with_retry(
+    ip: &amp;str,
+    port: u16,
+    config: &amp;SshConfig,
+    timeout: Duration,
+) -&gt; Result&lt;Session&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Retries connection with exponential backoff (1s to 5s). Runs blocking SSH on <code>tokio::task::spawn_blocking</code>.</p>
+<h2 id="provisioning-module"><a class="header" href="#provisioning-module">Provisioning Module</a></h2>
+<p>Located in <code>crates/vm-manager/src/provision.rs</code>.</p>
+<h3 id="run_provisions"><a class="header" href="#run_provisions">run_provisions</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn run_provisions(
+    sess: &amp;Session,
+    provisions: &amp;[ProvisionDef],
+    base_dir: &amp;Path,
+    vm_name: &amp;str,
+    log_dir: Option&lt;&amp;Path&gt;,
+) -&gt; Result&lt;()&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Runs all provisioners in sequence:</p>
+<ol>
+<li><strong>Shell (inline)</strong>: Executes the command via <code>exec_streaming</code>.</li>
+<li><strong>Shell (script)</strong>: Uploads the script to <code>/tmp/vmctl-provision-&lt;step&gt;.sh</code>, makes it executable, runs it.</li>
+<li><strong>File</strong>: Uploads via SFTP.</li>
+</ol>
+<p>Output is streamed to the terminal and appended to <code>provision.log</code> if <code>log_dir</code> is provided.</p>
+<p>Aborts on the first non-zero exit code with <code>VmError::ProvisionFailed</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vmfile-parsing-api"><a class="header" href="#vmfile-parsing-api">VMFile Parsing API</a></h1>
+<p>The VMFile module parses and resolves <code>VMFile.kdl</code> configuration files. Located in <code>crates/vm-manager/src/vmfile.rs</code>.</p>
+<h2 id="types"><a class="header" href="#types">Types</a></h2>
+<h3 id="vmfile"><a class="header" href="#vmfile">VmFile</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct VmFile {
+    pub base_dir: PathBuf,
+    pub vms: Vec&lt;VmDef&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="vmdef"><a class="header" href="#vmdef">VmDef</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct VmDef {
+    pub name: String,
+    pub image: ImageSource,
+    pub vcpus: u16,
+    pub memory_mb: u64,
+    pub disk_gb: Option&lt;u32&gt;,
+    pub network: NetworkDef,
+    pub cloud_init: Option&lt;CloudInitDef&gt;,
+    pub ssh: Option&lt;SshDef&gt;,
+    pub provisions: Vec&lt;ProvisionDef&gt;,
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="imagesource"><a class="header" href="#imagesource">ImageSource</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum ImageSource {
+    Local(String),
+    Url(String),
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="provisiondef"><a class="header" href="#provisiondef">ProvisionDef</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum ProvisionDef {
+    Shell(ShellProvision),
+    File(FileProvision),
+}
+
+pub struct ShellProvision {
+    pub inline: Option&lt;String&gt;,
+    pub script: Option&lt;String&gt;,
+}
+
+pub struct FileProvision {
+    pub source: String,
+    pub destination: String,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="functions"><a class="header" href="#functions">Functions</a></h2>
+<h3 id="discover"><a class="header" href="#discover">discover</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn discover(explicit: Option&lt;&amp;Path&gt;) -&gt; Result&lt;PathBuf&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Finds the VMFile. If <code>explicit</code> is provided, uses that path. Otherwise, looks for <code>VMFile.kdl</code> in the current directory.</p>
+<h3 id="parse"><a class="header" href="#parse">parse</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn parse(path: &amp;Path) -&gt; Result&lt;VmFile&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Parses a VMFile.kdl into a <code>VmFile</code> struct. Validates:</p>
+<ul>
+<li>At least one <code>vm</code> block.</li>
+<li>No duplicate VM names.</li>
+<li>Each VM has a valid image source.</li>
+<li>Provisioner blocks are well-formed.</li>
+</ul>
+<h3 id="resolve"><a class="header" href="#resolve">resolve</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub async fn resolve(def: &amp;VmDef, base_dir: &amp;Path) -&gt; Result&lt;VmSpec&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Converts a <code>VmDef</code> into a <code>VmSpec</code> ready for the hypervisor:</p>
+<ul>
+<li>Downloads images from URLs.</li>
+<li>Resolves local image paths.</li>
+<li>Generates Ed25519 SSH keypairs if needed.</li>
+<li>Reads cloud-init user-data files.</li>
+<li>Resolves all relative paths against <code>base_dir</code>.</li>
+</ul>
+<h3 id="utility-functions"><a class="header" href="#utility-functions">Utility Functions</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn expand_tilde(s: &amp;str) -&gt; PathBuf
+<span class="boring">}</span></code></pre></pre>
+<p>Expands <code>~</code> to the user's home directory.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn resolve_path(raw: &amp;str, base_dir: &amp;Path) -&gt; PathBuf
+<span class="boring">}</span></code></pre></pre>
+<p>Expands tilde and makes relative paths absolute against <code>base_dir</code>.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn generate_ssh_keypair(vm_name: &amp;str) -&gt; Result&lt;(String, String)&gt;
+<span class="boring">}</span></code></pre></pre>
+<p>Generates an Ed25519 keypair. Returns <code>(public_key_openssh, private_key_pem)</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="running-in-dockerpodman"><a class="header" href="#running-in-dockerpodman">Running in Docker/Podman</a></h1>
+<p>vmctl can run inside a container for CI/CD pipelines or isolated environments. The key requirement is access to <code>/dev/kvm</code>.</p>
+<h2 id="dockerfile"><a class="header" href="#dockerfile">Dockerfile</a></h2>
+<pre><code class="language-dockerfile">FROM rust:1.85-bookworm AS builder
+
+WORKDIR /build
+COPY . .
+RUN cargo build --release -p vmctl --features vm-manager/pure-iso
+
+FROM debian:bookworm-slim
+
+RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends \
+    qemu-system-x86 \
+    qemu-utils \
+    openssh-client \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /build/target/release/vmctl /usr/local/bin/vmctl
+
+ENV XDG_DATA_HOME=/data
+ENTRYPOINT ["vmctl"]
+</code></pre>
+<p>The <code>pure-iso</code> feature eliminates the need for <code>genisoimage</code> in the container.</p>
+<h2 id="docker"><a class="header" href="#docker">Docker</a></h2>
+<pre><code class="language-bash">docker build -t vmctl .
+
+docker run --rm \
+  --device /dev/kvm \
+  -v vmctl-data:/data \
+  vmctl list
+</code></pre>
+<p>The <code>--device /dev/kvm</code> flag passes through KVM access. No <code>--privileged</code> or special capabilities are needed for user-mode networking.</p>
+<p>For TAP networking, you'll need <code>--cap-add NET_ADMIN</code> and appropriate bridge configuration.</p>
+<h2 id="podman"><a class="header" href="#podman">Podman</a></h2>
+<pre><code class="language-bash">podman build -t vmctl .
+
+podman run --rm \
+  --device /dev/kvm \
+  -v vmctl-data:/data \
+  vmctl list
+</code></pre>
+<p>Podman works identically for user-mode networking.</p>
+<h2 id="persistent-data"><a class="header" href="#persistent-data">Persistent Data</a></h2>
+<p>Mount a volume at the <code>XDG_DATA_HOME</code> path (<code>/data</code> in the Dockerfile above) to persist VM state and cached images across container runs.</p>
+<h2 id="using-vmfiles"><a class="header" href="#using-vmfiles">Using VMFiles</a></h2>
+<p>Mount your project directory to use VMFile.kdl:</p>
+<pre><code class="language-bash">docker run --rm \
+  --device /dev/kvm \
+  -v vmctl-data:/data \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  vmctl up
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="tap-networking-and-bridges"><a class="header" href="#tap-networking-and-bridges">TAP Networking and Bridges</a></h1>
+<p>TAP networking gives VMs a real presence on a host network, with full Layer 2 connectivity.</p>
+<h2 id="creating-a-bridge"><a class="header" href="#creating-a-bridge">Creating a Bridge</a></h2>
+<pre><code class="language-bash"># Create bridge
+sudo ip link add br0 type bridge
+sudo ip link set br0 up
+
+# Assign an IP to the bridge (optional, for host-to-guest communication)
+sudo ip addr add 10.0.0.1/24 dev br0
+</code></pre>
+<h2 id="dhcp-with-dnsmasq"><a class="header" href="#dhcp-with-dnsmasq">DHCP with dnsmasq</a></h2>
+<p>Provide IP addresses to guests:</p>
+<pre><code class="language-bash">sudo dnsmasq \
+  --interface=br0 \
+  --bind-interfaces \
+  --dhcp-range=10.0.0.100,10.0.0.200,12h \
+  --no-daemon
+</code></pre>
+<h2 id="ip-forwarding-and-nat"><a class="header" href="#ip-forwarding-and-nat">IP Forwarding and NAT</a></h2>
+<p>If you want guests to reach the internet:</p>
+<pre><code class="language-bash"># Enable forwarding
+sudo sysctl -w net.ipv4.ip_forward=1
+
+# NAT outbound traffic
+sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/24 ! -o br0 -j MASQUERADE
+</code></pre>
+<h2 id="using-with-vmctl"><a class="header" href="#using-with-vmctl">Using with vmctl</a></h2>
+<h3 id="imperative-1"><a class="header" href="#imperative-1">Imperative</a></h3>
+<pre><code class="language-bash">vmctl create --name myvm --image ./image.qcow2 --bridge br0
+</code></pre>
+<h3 id="declarative-1"><a class="header" href="#declarative-1">Declarative</a></h3>
+<pre><code class="language-kdl">vm "myvm" {
+    image "image.qcow2"
+
+    network "tap" {
+        bridge "br0"
+    }
+
+    cloud-init {
+        hostname "myvm"
+    }
+
+    ssh {
+        user "ubuntu"
+    }
+}
+</code></pre>
+<h2 id="ip-discovery-1"><a class="header" href="#ip-discovery-1">IP Discovery</a></h2>
+<p>vmctl discovers TAP-networked guest IPs by:</p>
+<ol>
+<li>Checking the ARP table (<code>ip neigh show</code>) for the guest's MAC address on the bridge.</li>
+<li>Falling back to dnsmasq lease files.</li>
+</ol>
+<p>This happens automatically when you run <code>vmctl ssh</code> or provisioners.</p>
+<h2 id="security-considerations"><a class="header" href="#security-considerations">Security Considerations</a></h2>
+<ul>
+<li>TAP interfaces may bypass host firewall rules.</li>
+<li>Guests on the bridge can see other devices on the network.</li>
+<li>Use iptables rules on the bridge to restrict traffic if needed.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="illumos--propolis-backend"><a class="header" href="#illumos--propolis-backend">illumos / Propolis Backend</a></h1>
+<p>vmctl includes experimental support for running VMs on illumos using the Propolis hypervisor (bhyve-based).</p>
+<h2 id="requirements-1"><a class="header" href="#requirements-1">Requirements</a></h2>
+<ul>
+<li>illumos-based OS (OmniOS, SmartOS, etc.)</li>
+<li><code>propolis-server</code> installed and runnable</li>
+<li>ZFS pool (default: <code>rpool</code>)</li>
+<li><code>nebula-vm</code> zone brand installed</li>
+</ul>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h2>
+<p>The Propolis backend manages VMs as illumos zones:</p>
+<ol>
+<li><strong>Prepare</strong>: Creates a ZFS clone from <code>{pool}/images/{vm}@latest</code> to <code>{pool}/vms/{vm}</code>.</li>
+<li><strong>Start</strong>: Boots the zone with <code>zoneadm -z {vm} boot</code>, waits for propolis-server on <code>127.0.0.1:12400</code>, then sends the instance spec and run command via REST API.</li>
+<li><strong>Stop</strong>: Sends a stop command to propolis-server, then halts the zone.</li>
+<li><strong>Destroy</strong>: Stops the VM, uninstalls the zone (<code>zoneadm uninstall -F</code>), deletes the zone config (<code>zonecfg delete -F</code>), and destroys the ZFS dataset.</li>
+</ol>
+<h2 id="networking"><a class="header" href="#networking">Networking</a></h2>
+<p>Uses illumos VNICs for exclusive-IP zone networking:</p>
+<pre><code class="language-kdl">network "vnic" {
+    name "vnic0"
+}
+</code></pre>
+<h2 id="limitations"><a class="header" href="#limitations">Limitations</a></h2>
+<ul>
+<li>Suspend/resume not yet implemented.</li>
+<li>Console endpoint (WebSocket) is defined but not fully integrated.</li>
+<li>VNC address not yet exposed.</li>
+</ul>
+<h2 id="building-for-illumos"><a class="header" href="#building-for-illumos">Building for illumos</a></h2>
+<pre><code class="language-bash">cargo build --release -p vmctl --target x86_64-unknown-illumos
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="custom-cloud-init-user-data"><a class="header" href="#custom-cloud-init-user-data">Custom Cloud-Init User Data</a></h1>
+<p>For advanced guest configuration, you can provide a complete cloud-config YAML file instead of using vmctl's built-in cloud-init generation.</p>
+<h2 id="raw-user-data"><a class="header" href="#raw-user-data">Raw User-Data</a></h2>
+<pre><code class="language-kdl">vm "custom" {
+    image-url "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+
+    cloud-init {
+        user-data "cloud-config.yaml"
+    }
+}
+</code></pre>
+<h2 id="example-cloud-configyaml"><a class="header" href="#example-cloud-configyaml">Example cloud-config.yaml</a></h2>
+<pre><code class="language-yaml">#cloud-config
+users:
+  - name: deploy
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAA... your-key
+
+package_update: true
+packages:
+  - nginx
+  - certbot
+  - python3-certbot-nginx
+
+write_files:
+  - path: /etc/nginx/sites-available/default
+    content: |
+      server {
+          listen 80;
+          server_name _;
+          root /var/www/html;
+      }
+
+runcmd:
+  - systemctl enable nginx
+  - systemctl start nginx
+
+growpart:
+  mode: auto
+  devices: ["/"]
+</code></pre>
+<h2 id="the-pure-iso-feature"><a class="header" href="#the-pure-iso-feature">The pure-iso Feature</a></h2>
+<p>By default, vmctl generates the NoCloud seed ISO by shelling out to <code>genisoimage</code> or <code>mkisofs</code>. If neither is available, you can build with the <code>pure-iso</code> feature:</p>
+<pre><code class="language-bash">cargo build --release -p vmctl --features vm-manager/pure-iso
+</code></pre>
+<p>This uses the <code>isobemak</code> crate to generate ISO 9660 images entirely in Rust.</p>
+<h2 id="what-vmctl-generates"><a class="header" href="#what-vmctl-generates">What vmctl Generates</a></h2>
+<p>When you don't provide raw user-data, vmctl generates a cloud-config that:</p>
+<ol>
+<li>Creates a user with the specified name.</li>
+<li>Grants passwordless sudo.</li>
+<li>Sets bash as the default shell.</li>
+<li>Injects the SSH public key into <code>authorized_keys</code>.</li>
+<li>Disables root login.</li>
+<li>Sets the hostname (from <code>hostname</code> field or VM name).</li>
+<li>Sets a unique <code>instance-id</code> in the metadata.</li>
+</ol>
+<p>If you need more control than this, use raw user-data.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="debugging-and-logs"><a class="header" href="#debugging-and-logs">Debugging and Logs</a></h1>
+<h2 id="log-verbosity"><a class="header" href="#log-verbosity">Log Verbosity</a></h2>
+<p>vmctl uses the <code>tracing</code> crate with <code>RUST_LOG</code> environment variable support:</p>
+<pre><code class="language-bash"># Default (info level)
+vmctl up
+
+# Debug logging
+RUST_LOG=debug vmctl up
+
+# Trace logging (very verbose)
+RUST_LOG=trace vmctl up
+
+# Target specific modules
+RUST_LOG=vm_manager::ssh=debug vmctl ssh myvm
+</code></pre>
+<h2 id="vm-logs"><a class="header" href="#vm-logs">VM Logs</a></h2>
+<h3 id="console-log"><a class="header" href="#console-log">Console Log</a></h3>
+<p>The serial console output is captured to <code>console.log</code> in the VM's work directory. This includes boot messages and cloud-init output:</p>
+<pre><code class="language-bash">vmctl log myvm --console
+</code></pre>
+<h3 id="provision-log"><a class="header" href="#provision-log">Provision Log</a></h3>
+<p>Provisioner stdout/stderr is captured to <code>provision.log</code>:</p>
+<pre><code class="language-bash">vmctl log myvm --provision
+</code></pre>
+<h3 id="tail-recent-output"><a class="header" href="#tail-recent-output">Tail Recent Output</a></h3>
+<pre><code class="language-bash">vmctl log myvm --console --tail 50
+</code></pre>
+<h2 id="work-directory"><a class="header" href="#work-directory">Work Directory</a></h2>
+<p>Each VM's files are in <code>~/.local/share/vmctl/vms/&lt;name&gt;/</code>:</p>
+<pre><code class="language-bash">ls ~/.local/share/vmctl/vms/myvm/
+</code></pre>
+<p>Contents:</p>
+<ul>
+<li><code>overlay.qcow2</code> - Disk overlay</li>
+<li><code>seed.iso</code> - Cloud-init ISO</li>
+<li><code>console.log</code> - Serial output</li>
+<li><code>provision.log</code> - Provisioner output</li>
+<li><code>qmp.sock</code> - QMP control socket</li>
+<li><code>console.sock</code> - Console socket</li>
+<li><code>pidfile</code> - QEMU PID</li>
+<li><code>id_ed25519_generated</code> - Auto-generated SSH key</li>
+<li><code>id_ed25519_generated.pub</code> - Public key</li>
+</ul>
+<h2 id="qmp-socket"><a class="header" href="#qmp-socket">QMP Socket</a></h2>
+<p>You can interact with the QEMU Machine Protocol directly for advanced debugging:</p>
+<pre><code class="language-bash"># Using socat
+socat - UNIX-CONNECT:~/.local/share/vmctl/vms/myvm/qmp.sock
+</code></pre>
+<p>After connecting, send <code>{"execute": "qmp_capabilities"}</code> to initialize, then commands like:</p>
+<pre><code class="language-json">{"execute": "query-status"}
+{"execute": "query-vnc"}
+{"execute": "human-monitor-command", "arguments": {"command-line": "info network"}}
+</code></pre>
+<h2 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h2>
+<h3 id="qemu-spawn-failed"><a class="header" href="#qemu-spawn-failed">"QEMU spawn failed"</a></h3>
+<ul>
+<li>Verify <code>qemu-system-x86_64</code> is in your PATH.</li>
+<li>Check <code>/dev/kvm</code> exists and is accessible.</li>
+<li>Ensure your user is in the <code>kvm</code> group.</li>
+</ul>
+<h3 id="cloud-init-iso-failed"><a class="header" href="#cloud-init-iso-failed">"Cloud-init ISO failed"</a></h3>
+<ul>
+<li>Install <code>genisoimage</code> or <code>mkisofs</code>.</li>
+<li>Or rebuild with <code>--features vm-manager/pure-iso</code>.</li>
+</ul>
+<h3 id="ssh-failed"><a class="header" href="#ssh-failed">"SSH failed"</a></h3>
+<ul>
+<li>Check the console log for cloud-init errors: <code>vmctl log myvm --console</code></li>
+<li>Verify the guest is reachable (check <code>vmctl status myvm</code> for SSH port).</li>
+<li>Ensure sshd is running in the guest.</li>
+<li>Try connecting manually: <code>ssh -p &lt;port&gt; -i &lt;key&gt; user@127.0.0.1</code></li>
+</ul>
+<h3 id="ip-discovery-timeout-tap-networking"><a class="header" href="#ip-discovery-timeout-tap-networking">"IP discovery timeout" (TAP networking)</a></h3>
+<ul>
+<li>Verify the bridge exists and has DHCP.</li>
+<li>Check <code>ip neigh show</code> for the guest's MAC address.</li>
+<li>Ensure the guest has obtained a DHCP lease (check console log).</li>
+</ul>
+<h3 id="vm-stuck-in-stopped-state-but-qemu-still-running"><a class="header" href="#vm-stuck-in-stopped-state-but-qemu-still-running">VM stuck in "Stopped" state but QEMU still running</a></h3>
+<ul>
+<li>Check <code>vmctl status myvm</code> for the PID.</li>
+<li>Verify: <code>kill -0 &lt;pid&gt;</code> - if the process is alive, the QMP socket may be stale.</li>
+<li>Destroy and recreate: <code>vmctl destroy myvm</code>.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,11 @@
+[book]
+authors = ["toasty"]
+language = "en"
+multilingual = false
+src = "src"
+title = "vmctl Documentation"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/toasty/vm-manager"
