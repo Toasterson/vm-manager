@@ -49,6 +49,12 @@ pub struct CreateArgs {
     #[arg(long)]
     uefi: bool,
 
+    /// Force virtio-blk-pci/virtio-net-pci into legacy-transitional mode
+    /// (works around guest drivers that fail to map the "modern" virtio-pci
+    /// capability BAR under q35/PCIe, e.g. illumos vioblk/vioif)
+    #[arg(long)]
+    virtio_transitional: bool,
+
     /// Also start the VM after creation
     #[arg(long)]
     start: bool,
@@ -162,6 +168,7 @@ pub async fn run(args: CreateArgs) -> Result<()> {
         cloud_init,
         ssh,
         uefi: args.uefi,
+        virtio_transitional: args.virtio_transitional,
     };
 
     let hv = RouterHypervisor::new(None, None);

@@ -35,6 +35,13 @@ pub struct VmSpec {
     /// pflash drives for OVMF_CODE and a per-VM copy of OVMF_VARS.
     /// Default: false (legacy BIOS boot).
     pub uefi: bool,
+    /// Force virtio-blk-pci/virtio-net-pci into legacy-transitional mode
+    /// (`disable-modern=on,disable-legacy=off`) instead of QEMU's default
+    /// (modern-preferred transitional). Works around a guest-driver bug
+    /// where the "modern" virtio-pci capability BAR fails to map under
+    /// q35/PCIe ("Failed to map CAP N @ BARx") — observed with illumos
+    /// vioblk/vioif guests. Default: false (QEMU's normal default).
+    pub virtio_transitional: bool,
 }
 
 /// Network configuration for a VM.
@@ -120,6 +127,10 @@ pub struct VmHandle {
     /// Boot with UEFI firmware.
     #[serde(default)]
     pub uefi: bool,
+    /// Force virtio-blk-pci/virtio-net-pci into legacy-transitional mode.
+    /// See `VmSpec::virtio_transitional`.
+    #[serde(default)]
+    pub virtio_transitional: bool,
 }
 
 fn default_vcpus() -> u16 {

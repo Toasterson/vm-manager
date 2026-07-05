@@ -140,6 +140,7 @@ impl Hypervisor for PropolisBackend {
             ssh_host_port: None,
             mac_addr: None,
             uefi: false,
+            virtio_transitional: false,
         };
 
         info!(name = %spec.name, id = %handle.id, "Propolis: prepared");

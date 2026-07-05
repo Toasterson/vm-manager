@@ -179,6 +179,7 @@ impl Hypervisor for QemuBackend {
             ssh_host_port,
             mac_addr: Some(mac_addr),
             uefi: spec.uefi,
+            virtio_transitional: spec.virtio_transitional,
         };
 
         info!(
@@ -269,7 +270,11 @@ impl Hypervisor for QemuBackend {
                 overlay.display()
             ),
             "-device".into(),
-            "virtio-blk-pci,drive=drive0".into(),
+            if vm.virtio_transitional {
+                "virtio-blk-pci,drive=drive0,disable-modern=on,disable-legacy=off".into()
+            } else {
+                "virtio-blk-pci,drive=drive0".into()
+            },
         ];
 
         // UEFI firmware (OVMF pflash drives)
@@ -291,13 +296,18 @@ impl Hypervisor for QemuBackend {
         }
 
         // Networking
+        let net_device_suffix = if vm.virtio_transitional {
+            ",disable-modern=on,disable-legacy=off"
+        } else {
+            ""
+        };
         match &vm.network {
             NetworkConfig::Tap { bridge } => {
                 args.extend([
                     "-netdev".into(),
                     format!("tap,id=net0,br={bridge},script=no,downscript=no"),
                     "-device".into(),
-                    format!("virtio-net-pci,netdev=net0,mac={mac}"),
+                    format!("virtio-net-pci,netdev=net0,mac={mac}{net_device_suffix}"),
                 ]);
             }
             NetworkConfig::User => {
@@ -306,7 +316,7 @@ impl Hypervisor for QemuBackend {
                     "-netdev".into(),
                     format!("user,id=net0,hostfwd=tcp::{port}-:22"),
                     "-device".into(),
-                    format!("virtio-net-pci,netdev=net0,mac={mac}"),
+                    format!("virtio-net-pci,netdev=net0,mac={mac}{net_device_suffix}"),
                 ]);
             }
             NetworkConfig::Vnic { .. } | NetworkConfig::None => {
