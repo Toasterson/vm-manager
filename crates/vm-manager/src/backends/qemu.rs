@@ -166,6 +166,7 @@ impl Hypervisor for QemuBackend {
             ssh_host_port,
             mac_addr: Some(mac_addr),
             uefi: spec.uefi,
+            virtio_transitional: spec.virtio_transitional,
         };
 
         info!(
@@ -240,8 +241,12 @@ impl Hypervisor for QemuBackend {
             "-serial".into(),
             "chardev:serial0".into(),
             // VNC on localhost with auto-port
+            // VNC on localhost, auto-picking a free display in 0..99
+            // (5900..5999) — plain "127.0.0.1:0" binds display 0 literally
+            // and fails outright with "Address already in use" when running
+            // more than one VM concurrently, which multi-VM VMFiles do.
             "-vnc".into(),
-            "127.0.0.1:0".into(),
+            "127.0.0.1:0,to=99".into(),
             // Virtio RNG
             "-device".into(),
             "virtio-rng-pci".into(),
@@ -252,7 +257,11 @@ impl Hypervisor for QemuBackend {
                 overlay.display()
             ),
             "-device".into(),
-            "virtio-blk-pci,drive=drive0".into(),
+            if vm.virtio_transitional {
+                "virtio-blk-pci,drive=drive0,disable-modern=on,disable-legacy=off".into()
+            } else {
+                "virtio-blk-pci,drive=drive0".into()
+            },
         ];
 
         // UEFI firmware (OVMF pflash drives)
@@ -274,13 +283,18 @@ impl Hypervisor for QemuBackend {
         }
 
         // Networking
+        let net_device_suffix = if vm.virtio_transitional {
+            ",disable-modern=on,disable-legacy=off"
+        } else {
+            ""
+        };
         match &vm.network {
             NetworkConfig::Tap { bridge } => {
                 args.extend([
                     "-netdev".into(),
                     format!("tap,id=net0,br={bridge},script=no,downscript=no"),
                     "-device".into(),
-                    format!("virtio-net-pci,netdev=net0,mac={mac}"),
+                    format!("virtio-net-pci,netdev=net0,mac={mac}{net_device_suffix}"),
                 ]);
             }
             NetworkConfig::User => {
@@ -289,7 +303,7 @@ impl Hypervisor for QemuBackend {
                     "-netdev".into(),
                     format!("user,id=net0,hostfwd=tcp::{port}-:22"),
                     "-device".into(),
-                    format!("virtio-net-pci,netdev=net0,mac={mac}"),
+                    format!("virtio-net-pci,netdev=net0,mac={mac}{net_device_suffix}"),
                 ]);
             }
             NetworkConfig::Vnic { .. } | NetworkConfig::None => {

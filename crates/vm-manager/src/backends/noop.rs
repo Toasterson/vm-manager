@@ -34,6 +34,7 @@ impl Hypervisor for NoopBackend {
             ssh_host_port: None,
             mac_addr: None,
             uefi: false,
+            virtio_transitional: false,
         })
     }
 
@@ -94,6 +95,7 @@ mod tests {
             cloud_init: None,
             ssh: None,
             uefi: false,
+            virtio_transitional: false,
         }
     }
 
@@ -161,6 +163,7 @@ mod tests {
             ssh_host_port: Some(10022),
             mac_addr: Some("52:54:00:ab:cd:ef".into()),
             uefi: false,
+            virtio_transitional: false,
         };
         let json = serde_json::to_string_pretty(&handle).unwrap();
         let parsed: VmHandle = serde_json::from_str(&json).unwrap();

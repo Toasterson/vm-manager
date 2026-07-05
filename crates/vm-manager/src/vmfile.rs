@@ -34,6 +34,11 @@ pub struct VmDef {
     pub cloud_init: Option<CloudInitDef>,
     pub ssh: Option<SshDef>,
     pub provisions: Vec<ProvisionDef>,
+    /// Boot with UEFI firmware (OVMF) instead of legacy BIOS.
+    pub uefi: bool,
+    /// Force virtio-blk-pci/virtio-net-pci into legacy-transitional mode.
+    /// See `VmSpec::virtio_transitional`.
+    pub virtio_transitional: bool,
 }
 
 /// Where to source the VM image from.
@@ -268,6 +273,16 @@ fn parse_vm_def(name: &str, doc: &KdlDocument) -> Result<VmDef> {
         .and_then(|v| v.as_integer())
         .map(|v| v as u32);
 
+    let uefi = doc
+        .get_arg("uefi")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+
+    let virtio_transitional = doc
+        .get_arg("virtio-transitional")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+
     // Network
     let network = if let Some(net_node) = doc.get("network") {
         let net_type = net_node
@@ -443,6 +458,8 @@ fn parse_vm_def(name: &str, doc: &KdlDocument) -> Result<VmDef> {
         cloud_init,
         ssh,
         provisions,
+        uefi,
+        virtio_transitional,
     })
 }
 
@@ -500,7 +517,8 @@ pub async fn resolve(def: &VmDef, base_dir: &Path) -> Result<VmSpec> {
         network,
         cloud_init,
         ssh,
-        uefi: false,
+        uefi: def.uefi,
+        virtio_transitional: def.virtio_transitional,
     })
 }
 
@@ -803,6 +821,64 @@ vm "dup" {
         let err = parse(tmp.path()).unwrap_err();
         let msg = err.to_string();
         assert!(msg.contains("duplicate"), "got: {msg}");
+    }
+
+    #[test]
+    fn parse_uefi_flag() {
+        let kdl = r#"
+vm "efi" {
+    image "/tmp/test.qcow2"
+    uefi #true
+}
+"#;
+        let tmp = tempfile::NamedTempFile::with_suffix(".kdl").unwrap();
+        std::fs::write(tmp.path(), kdl).unwrap();
+
+        let vmfile = parse(tmp.path()).unwrap();
+        assert!(vmfile.vms[0].uefi);
+    }
+
+    #[test]
+    fn uefi_defaults_false() {
+        let kdl = r#"
+vm "bios" {
+    image "/tmp/test.qcow2"
+}
+"#;
+        let tmp = tempfile::NamedTempFile::with_suffix(".kdl").unwrap();
+        std::fs::write(tmp.path(), kdl).unwrap();
+
+        let vmfile = parse(tmp.path()).unwrap();
+        assert!(!vmfile.vms[0].uefi);
+    }
+
+    #[test]
+    fn parse_virtio_transitional_flag() {
+        let kdl = r#"
+vm "legacy-virtio" {
+    image "/tmp/test.qcow2"
+    virtio-transitional #true
+}
+"#;
+        let tmp = tempfile::NamedTempFile::with_suffix(".kdl").unwrap();
+        std::fs::write(tmp.path(), kdl).unwrap();
+
+        let vmfile = parse(tmp.path()).unwrap();
+        assert!(vmfile.vms[0].virtio_transitional);
+    }
+
+    #[test]
+    fn virtio_transitional_defaults_false() {
+        let kdl = r#"
+vm "modern-virtio" {
+    image "/tmp/test.qcow2"
+}
+"#;
+        let tmp = tempfile::NamedTempFile::with_suffix(".kdl").unwrap();
+        std::fs::write(tmp.path(), kdl).unwrap();
+
+        let vmfile = parse(tmp.path()).unwrap();
+        assert!(!vmfile.vms[0].virtio_transitional);
     }
 
     #[test]

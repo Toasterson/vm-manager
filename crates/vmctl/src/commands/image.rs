@@ -39,10 +39,15 @@ pub async fn run(args: ImageCommand) -> Result<()> {
     match args.action {
         ImageAction::Pull(pull) => {
             let mgr = vm_manager::image::ImageManager::new();
-            let path = mgr
-                .pull(&pull.url, pull.name.as_deref())
-                .await
-                .into_diagnostic()?;
+            let path = if let Some(oci_ref) = pull.url.strip_prefix("oci://") {
+                mgr.pull_oci(oci_ref, pull.name.as_deref())
+                    .await
+                    .into_diagnostic()?
+            } else {
+                mgr.pull(&pull.url, pull.name.as_deref())
+                    .await
+                    .into_diagnostic()?
+            };
             println!("Image cached at: {}", path.display());
         }
         ImageAction::List => {
